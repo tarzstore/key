@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Admin Key</title>
+<style>
+:root{--ink:#0b0b0f;--blue:#2f5bff;--tint:#dfe7ff;--paper:#f4f1ea}
+*{box-sizing:border-box}
+body{margin:0;padding:24px 16px;background:var(--paper);color:var(--ink);font:500 15px/1.4 system-ui,sans-serif}
+main{max-width:460px;margin:auto}
+h1{font:900 22px/1.1 Impact,system-ui,sans-serif;text-transform:uppercase;margin:0 0 16px}
+.card{border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:6px 6px 0 var(--ink);padding:16px;margin-bottom:16px}
+.card b{display:block;margin-bottom:8px}
+input{width:100%;height:44px;margin-bottom:8px;padding:0 12px;border:3px solid var(--ink);border-radius:10px;font:700 15px system-ui}
+.row{display:flex;gap:8px}.row input{flex:1}
+button{height:44px;padding:0 14px;border:3px solid var(--ink);border-radius:10px;background:var(--blue);color:#fff;font:700 14px system-ui;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+button.alt{background:#fff;color:var(--ink)}
+button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.full{width:100%}
+#msg{min-height:20px;font-weight:700;margin:8px 0}
+.link{font-size:12px;color:#5d5a55;word-break:break-all}
+[hidden]{display:none!important}
+</style></head>
+<body><main>
+<h1>Admin Key</h1>
+<div id="msg"></div>
+
+<section id="login" class="card">
+  <b>Login admin</b>
+  <input id="em" type="email" placeholder="Email" autocomplete="username">
+  <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+  <button class="full" id="loginBtn">Masuk</button>
+</section>
+
+<section id="panel" hidden>
+  <div id="list"></div>
+  <button class="full" id="saveAll">Simpan semua</button>
+  <button class="full alt" id="out" style="margin-top:10px">Keluar</button>
+</section>
+</main>
+
+<script>
+(function(){
+  var msg = location.protocol === 'file:'
+    ? 'Halaman dibuka dari file lokal (file://). Upload ke hosting dan buka lewat https://.'
+    : 'Script Firebase gagal dimuat. Cek koneksi internet / VPN / pemblokir iklan (gstatic.com tidak boleh diblokir), lalu refresh paksa.';
+  function show(){ var m=document.getElementById('msg'); m.style.color='#c00'; m.textContent=msg; }
+  document.getElementById('loginBtn').addEventListener('click', function(){ if(!window.__adminOk) show(); });
+  setTimeout(function(){ if(!window.__adminOk) show(); }, 3000);
+})();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDxlcMvfZ1nhJ8WYbjR_y50N7EaY71gRIY",
+  authDomain: "free-key-3024b.firebaseapp.com",
+  projectId: "free-key-3024b",
+  storageBucket: "free-key-3024b.firebasestorage.app",
+  messagingSenderId: "766189284478",
+  appId: "1:766189284478:web:524ba727e03eedde53bc2f"
+};
+
+window.__adminOk = true;
+const APPS = ['TARZ PROXY V1', 'TARZ MODZ PROXY', 'TARZ X MODZ', '8 BALL POOL V10'];
+const app = initializeApp(firebaseConfig), db = getFirestore(app), auth = getAuth(app);
+const $ = (id) => document.getElementById(id);
+const say = (t, bad) => { $('msg').textContent = t; $('msg').style.color = bad ? '#c00' : '#0a7a2f'; };
+const rand = () => { const P = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let r = ''; for (let i = 0; i < 5; i++) r += P[Math.floor(Math.random() * P.length)]; return r; };
+
+$('list').innerHTML = APPS.map((n, i) => `
+  <div class="card"><b>${i + 1}. ${n}</b>
+    <div class="row"><input id="k${i + 1}" placeholder="Key" autocomplete="off"></div>
+    <input id="u${i + 1}" placeholder="Berlaku sampai (opsional)" autocomplete="off">
+    <div class="link">Link VPLink tujuan: ${location.origin}${location.pathname.replace(/[^/]*$/, '')}key.html?k=${i + 1}</div>
+  </div>`).join('');
+
+
+async function load() {
+  for (let i = 1; i <= 4; i++) {
+    const s = await getDoc(doc(db, 'vpkeys', String(i)));
+    if (s.exists()) { $('k' + i).value = s.data().key || ''; $('u' + i).value = s.data().until || ''; }
+  }
+}
+
+$('loginBtn').onclick = async () => {
+  try { await signInWithEmailAndPassword(auth, $('em').value.trim(), $('pw').value); say(''); }
+  catch (e) {
+    const m = {
+      'auth/invalid-credential': 'Email atau password salah (atau user belum dibuat di Authentication).',
+      'auth/invalid-api-key': 'apiKey Firebase salah.',
+      'auth/operation-not-allowed': 'Email/Password belum diaktifkan di Authentication > Sign-in method.',
+      'auth/unauthorized-domain': 'Domain situs belum ditambahkan di Authentication > Settings > Authorized domains.',
+      'auth/network-request-failed': 'Gagal terhubung ke Firebase (cek internet / config).',
+      'auth/too-many-requests': 'Terlalu banyak percobaan, tunggu beberapa menit.',
+      'auth/invalid-email': 'Format email salah.'
+    };
+    say('Login gagal [' + (e.code || e.message) + ']: ' + (m[e.code] || 'lihat kode di dalam kurung.'), true);
+    console.error(e);
+  }
+};
+$('out').onclick = () => signOut(auth);
+
+$('saveAll').onclick = async () => {
+  try {
+    for (let i = 1; i <= 4; i++) {
+      await setDoc(doc(db, 'vpkeys', String(i)), { name: APPS[i - 1], key: $('k' + i).value.trim(), until: $('u' + i).value.trim(), updated: serverTimestamp() });
+    }
+    say('Tersimpan. Key baru langsung aktif.');
+  } catch (e) { say('Gagal menyimpan (cek login / rules Firebase).', true); }
+};
+
+onAuthStateChanged(auth, async (u) => {
+  $('login').hidden = !!u; $('panel').hidden = !u;
+  if (u) { try { await load(); } catch (e) { say('Gagal memuat data.', true); } }
+});
+</script>
+</body></html>
