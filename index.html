@@ -43,6 +43,14 @@ h1{display:block;width:max-content;margin:24px auto 0;padding:5px 12px;border-ra
   font:700 12.5px/1.3 var(--body);letter-spacing:.1em;text-transform:uppercase;transform:rotate(1.5deg);animation:slam .7s .12s cubic-bezier(.3,1.6,.5,1) both}
 
 /* ---------- tiles ---------- */
+.tutwrap{position:relative;z-index:1;max-width:420px;margin:30px auto 0}
+.tut{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;margin:0;border:3px solid var(--ink);border-radius:14px;background:var(--yellow,#ffd23f);color:var(--ink);text-decoration:none;
+  font:400 17px/1 var(--head);text-transform:uppercase;box-shadow:5px 5px 0 var(--ink);transform:rotate(-.8deg);animation:pop .6s .15s cubic-bezier(.3,1.5,.5,1) backwards;transition:background .15s,transform .12s,box-shadow .12s}
+.tut .pl{flex:none;width:30px;height:30px;display:grid;place-items:center;border:3px solid var(--ink);border-radius:8px;background:var(--blue);box-shadow:2px 2px 0 var(--ink)}
+.tut .pl svg{width:12px;height:12px;fill:var(--white);margin-left:2px}
+.tut:hover,.tut:focus-visible{background:var(--white)}
+.tut:active{transform:translate(3px,3px) rotate(-.8deg);box-shadow:1px 1px 0 var(--ink)}
+.tut:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px 16px}
 .tile{--r:-.8deg;position:relative;display:flex;flex-direction:column;gap:10px;padding:10px;border:3px solid var(--ink);border-radius:16px;background:var(--white);color:var(--ink);text-decoration:none;
   box-shadow:6px 6px 0 var(--ink);transform:rotate(var(--r));transition:transform .15s,box-shadow .15s;
@@ -54,9 +62,14 @@ h1{display:block;width:max-content;margin:24px auto 0;padding:5px 12px;border-ra
 .logo{width:100%;aspect-ratio:1;border:3px solid var(--ink);border-radius:10px;overflow:hidden;display:grid;place-items:center;background:var(--tint);color:var(--blue);font:400 30px/1 var(--head)}
 .logo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
 .tile:hover .logo img{transform:scale(1.07) rotate(-1deg)}
-.name{display:grid;place-items:center;min-height:2.6em;padding:0 2px;font:700 13.5px/1.25 var(--body);letter-spacing:.02em;text-transform:uppercase;text-align:center}
+.name{display:grid;place-items:center;min-height:1.6em;padding:2px 0 0;font:400 19px/1.2 var(--head);letter-spacing:0;text-transform:uppercase;text-align:center;white-space:nowrap;overflow:hidden}
+.tile:hover .name{color:var(--blue)}
 .go{height:42px;display:flex;align-items:center;justify-content:center;gap:7px;border:3px solid var(--ink);border-radius:10px;background:var(--blue);color:var(--white);
   font:700 13px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:background .15s,transform .12s,box-shadow .12s}
+.btns{display:grid;gap:10px}
+.go.install{background:var(--yellow,#ffd23f);color:var(--ink)}
+.go.install:hover,.go.install:focus-visible{background:var(--white);color:var(--ink)}
+.go.install:hover svg{transform:translateY(3px)}
 .go svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;transition:transform .15s}
 .go:hover,.go:focus-visible{background:var(--ink)}
 .go:hover svg{transform:translateX(3px)}
@@ -94,18 +107,22 @@ h1{display:block;width:max-content;margin:24px auto 0;padding:5px 12px;border-ra
   </header>
   <div class="grid" id="list"></div>
 </main>
+<div class="tutwrap">
+  <a class="tut" href="https://vt.tiktok.com/ZSbmym8vu/" target="_blank" rel="noopener"><span class="pl"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg></span>Tutorial Get Key</a>
+</div>
 <div class="ticker-wrap"><div class="ticker"><div class="track" id="track"></div></div></div>
 
 <script>
-  // Isi link VPLink masing-masing aplikasi.
+  // install = link MediaFire untuk download APK, link = link VPLink untuk Get Key.
   // Tiap link VPLink tujuannya: https://SITEKAMU/key.html?k=1 (atau 2, 3, 4) sesuai urutan.
   const APPS = [
-    { name: 'TARZ PROXY V1',   logo: 'https://i.ibb.co.com/YT3cv6Y3/product.jpg', link: 'https://vplink.in/tarz1' },
-    { name: 'TARZ MODZ PROXY', logo: 'https://i.ibb.co.com/bhf84LY/product.jpg',  link: 'https://vplink.in/bhjfcff' },
-    { name: 'TARZ X MODZ',     logo: 'https://i.ibb.co.com/gbv5tGt8/product.jpg', link: 'https://vplink.in/bhjjnbb' },
-    { name: '8 BALL POOL V10', logo: 'https://i.ibb.co.com/674DCgnZ/product.jpg', link: 'https://vplink.in/bhjcxxz' }
+    { name: 'TARZ PROXY V1',   logo: 'https://i.ibb.co.com/YT3cv6Y3/product.jpg', install: 'https://www.mediafire.com/file/cw9f4lmkrwjx8ff/TarzProxy.apk/file', link: 'https://vplink.in/tarz1' },
+    { name: 'TARZ MODZ PROXY', logo: 'https://i.ibb.co.com/bhf84LY/product.jpg',  install: 'https://www.mediafire.com/file/3wguz3vn187z1ch/Tarz_Modz_Proxy.release.apk/file', link: 'https://vplink.in/bhjfcff' },
+    { name: 'TARZ X MODZ',     logo: 'https://i.ibb.co.com/gbv5tGt8/product.jpg', install: 'https://www.mediafire.com/file/pj1iipmidto2xr6/TARZ+MODZ+V3.apk/file', link: 'https://vplink.in/bhjjnbb' },
+    { name: '8 BALL POOL V10', logo: 'https://i.ibb.co.com/674DCgnZ/product.jpg', install: 'https://www.mediafire.com/file/81gji9qdaqofycn/8+Ball+Poll+V10.apk/file', link: 'https://vplink.in/bhjcxxz' }
   ];
 
+  const DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13M6 11l6 6 6-6M4 21h16"/></svg>';
   const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg>';
   const list = document.getElementById('list');
 
@@ -140,9 +157,35 @@ h1{display:block;width:max-content;margin:24px auto 0;padding:5px 12px;border-ra
     go.href = app.link;
     go.innerHTML = 'Get Key' + ARROW;
 
-    a.append(num, logo, name, go);
+    const btns = document.createElement('div');
+    btns.className = 'btns';
+    if (app.install) {
+      const ins = document.createElement('a');
+      ins.className = 'go install';
+      ins.href = app.install;
+      ins.target = '_blank';
+      ins.rel = 'noopener';
+      ins.innerHTML = 'Install' + DOWN;
+      btns.appendChild(ins);
+    }
+    btns.appendChild(go);
+
+    a.append(num, logo, name, btns);
     list.appendChild(a);
   });
+
+  // Nama selalu 1 baris: kecilkan font otomatis kalau terlalu panjang.
+  function fitNames() {
+    document.querySelectorAll('.name').forEach((el) => {
+      el.style.fontSize = '';
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      el.style.display = 'block';
+      while (el.scrollWidth > el.clientWidth && size > 9) { size -= 0.5; el.style.fontSize = size + 'px'; }
+    });
+  }
+  fitNames();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
+  addEventListener('resize', fitNames);
 
   // ---------- dekorasi ----------
   const burst = (n, ro, ri) => {
