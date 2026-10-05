@@ -113,6 +113,11 @@ body.lock{overflow:hidden}
 
 <section id="panel" hidden>
   <div class="total"><span id="totalTxt">Total Keys: 0</span><button type="button" id="refBtn">Refresh</button></div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="ttl">Token API VPLink</div>
+    <input id="vpTok" type="password" placeholder="Tempel token API VPLink" autocomplete="off" spellcheck="false">
+    <button type="button" id="vpTokSave" class="alt">Simpan token (di browser ini)</button>
+  </div>
   <div id="list"></div>
   <button class="alt" id="addBtn" type="button">+ Tambah aplikasi</button>
   <button id="saveAll" type="button">Simpan semua</button>
@@ -160,6 +165,13 @@ const DEFAULT_APPS = [
   { name: '8 BALL POOL V10', logo: 'https://i.ibb.co.com/674DCgnZ/product.jpg', install: 'https://www.mediafire.com/file/81gji9qdaqofycn/8+Ball+Poll+V10.apk/file', link: 'https://vplink.in/bhjcxxz' }
 ];
 let ids = [];
+// Token acak per aplikasi: dipakai di link key.html?k=TOKEN (tidak bisa ditebak). ID aplikasi (1,2,3..) tetap untuk urutan & hitungan.
+let tokens = {};
+const newToken = () => {
+  const P = 'abcdefghjkmnpqrstuvwxyz23456789', a = new Uint32Array(16);
+  crypto.getRandomValues(a);
+  return [...a].map((n) => P[n % P.length]).join('');
+};
 const app = initializeApp(firebaseConfig), db = getFirestore(app), auth = getAuth(app);
 const $ = (id) => document.getElementById(id);
 const say = (t, bad) => {
@@ -217,7 +229,27 @@ function closeEdit() {
   cur = null;
 }
 
+const keyLinkT = (tk) => base + 'key.html?k=' + tk;
+const keyLink = (id) => keyLinkT(tokens[id]);
+const VPK = 'vplink_api_token';
+const getVpTok = () => { try { return localStorage.getItem(VPK) || ''; } catch (e) { return ''; } };
+async function makeShort(url) {
+  const tk = getVpTok();
+  if (!tk) throw new Error('Token API VPLink belum disimpan.');
+  const r = await fetch('https://vplink.in/api?api=' + encodeURIComponent(tk) + '&url=' + encodeURIComponent(url));
+  const raw = (await r.text()).trim();
+  let j = null;
+  try { j = JSON.parse(raw); } catch (e) {}
+  // cadangan: kalau balasan bukan JSON valid (mis. tanda kutip ganda), ambil URL-nya langsung
+  const m = raw.replace(/\\\//g, '/').match(/https?:\/\/[^\s"'<>]+/);
+  const out = j && j.status === 'success' && j.shortenedUrl ? String(j.shortenedUrl) : (j ? '' : (m ? m[0] : ''));
+  if (!out) throw new Error(((j && j.message) || 'VPLink menolak permintaan.') + ' [URL yang dikirim: ' + url + ']');
+  return out;
+}
+function showLink(id) { const el = $('lk' + id); if (el) el.textContent = keyLink(id); }
+
 function addCard(id, d = {}) {
+  if (!tokens[id]) tokens[id] = newToken();
   $('list').insertAdjacentHTML('beforeend', `
   <div class="card" id="card${id}">
     <div class="row">
@@ -264,8 +296,10 @@ function addCard(id, d = {}) {
       <input id="mf${id}" type="url" placeholder="https://www.mediafire.com/file/..." autocomplete="off" spellcheck="false">
       <label for="vp${id}">VPLink (tombol Get Key)</label>
       <input id="vp${id}" type="url" placeholder="https://vplink.in/xxxx" autocomplete="off" spellcheck="false">
-      <p class="link">Tujuan link VPLink (isi saat bikin link di vplink.in):<br>${base}key.html?k=${id}</p>
+      <p class="link">Tujuan link VPLink (isi saat bikin link di vplink.in):<br><span id="lk${id}"></span></p>
       <button type="button" class="cpy" data-copylink="${id}">Salin link</button>
+      <button type="button" class="cpy" data-regen="${id}">Acak ulang link</button>
+      <button type="button" class="cpy" data-mkshort="${id}">Buat link VPLink otomatis</button>
 
       <button type="button" class="save" data-save="${id}">Simpan aplikasi ini</button>
       <div class="acts">
@@ -291,6 +325,7 @@ function addCard(id, d = {}) {
   $('lg' + id).addEventListener('input', () => { clearTimeout(pvT[id]); pvT[id] = setTimeout(() => setPv(id), 400); });
   setPv(id);
   sync(id);
+  showLink(id);
   ids.push(id);
 }
 
@@ -312,7 +347,26 @@ async function load() {
   const snap = await getDocs(collection(db, 'vpkeys'));
   let extra = {};
   try { (await getDocs(collection(db, 'apps'))).forEach((x) => { extra[x.id] = x.data(); }); } catch (e) { /* koleksi apps belum ada / rules belum diatur */ }
-  const rows = snap.docs.filter((x) => /^\d+$/.test(x.id)).map((x) => ({ id: x.id, ...x.data() })).sort((a, b) => a.id - b.id);
+  tokens = {};
+  let rows = [], legacy = [];
+  snap.docs.forEach((x) => {
+    const d = x.data(), appId = d.app ? String(d.app) : (/^\d+$/.test(x.id) ? x.id : '');
+    if (!appId) return;
+    const r = { id: appId, ...d, _doc: x.id };
+    rows.push(r);
+    if (x.id === appId) legacy.push(r); // link lama ?k=1,2,3 (bisa ditebak)
+  });
+  if (legacy.length && confirm('Ada ' + legacy.length + ' link lama (?k=1, ?k=2, ...) yang bisa ditebak orang.\n\nUbah jadi acak sekarang? Link lama langsung berhenti bekerja, jadi tujuan link di vplink.in harus diganti ke link baru.')) {
+    for (const r of legacy) {
+      const tk = newToken(), { _doc, id, ...data } = r;
+      await setDoc(doc(db, 'vpkeys', tk), { ...data, app: id, updated: serverTimestamp() });
+      await deleteDoc(doc(db, 'vpkeys', _doc));
+      r._doc = tk;
+    }
+    say('Link diubah jadi acak. Salin link baru tiap aplikasi lalu ganti tujuan di vplink.in.');
+  }
+  rows.forEach((r) => { tokens[r.id] = r._doc; });
+  rows.sort((a, b) => a.id - b.id);
   $('list').innerHTML = ''; ids = [];
   if (rows.length) rows.forEach((r) => {
     const df = DEFAULT_APPS[Number(r.id) - 1] || {};
@@ -332,9 +386,10 @@ $('addBtn').onclick = () => {
   say('Aplikasi ' + id + ' baru. Isi datanya lalu klik "Simpan aplikasi ini".');
 };
 
-async function saveOne(id) {
+async function saveOne(id, tk = tokens[id]) {
   const name = $('a' + id).value.trim() || ('Aplikasi ' + id);
-  await setDoc(doc(db, 'vpkeys', id), {
+  await setDoc(doc(db, 'vpkeys', tk), {
+    app: id,
     name,
     mode: $('m' + id).value,
     key: $('k' + id).value.trim(),
@@ -370,7 +425,7 @@ async function onAction(e) {
 
   const cp = e.target.closest('[data-copylink]');
   if (cp) {
-    const text = base + 'key.html?k=' + cp.dataset.copylink, orig = 'Salin link';
+    const text = keyLink(cp.dataset.copylink), orig = 'Salin link';
     let ok = false;
     try { await navigator.clipboard.writeText(text); ok = true; }
     catch (err) {
@@ -381,6 +436,32 @@ async function onAction(e) {
     cp.textContent = ok ? 'Tersalin' : 'Gagal, salin manual';
     cp.classList.toggle('ok', ok);
     setTimeout(() => { cp.textContent = orig; cp.classList.remove('ok'); }, 2000);
+    return;
+  }
+
+  const rg = e.target.closest('[data-regen]');
+  if (rg) {
+    const id = rg.dataset.regen, auto = !!getVpTok();
+    if (!confirm('Acak ulang link aplikasi ini? Link lama langsung berhenti bekerja.' + (auto ? ' Link VPLink baru dibuat otomatis.' : ' Tujuan di vplink.in harus diganti manual.'))) return;
+    const old = tokens[id], tk = newToken();
+    try {
+      if (auto) $('vp' + id).value = await makeShort(keyLinkT(tk));
+      await saveOne(id, tk);
+      if (old && old !== tk) await deleteDoc(doc(db, 'vpkeys', old));
+    } catch (err) { say('Gagal mengacak link, tidak ada yang diubah: ' + (err.message || err) + (auto ? ' (kalau terblokir CORS, pakai Cloud Function)' : ''), true); console.error(err); return; }
+    tokens[id] = tk; showLink(id);
+    say(auto ? 'Link baru dibuat dan sudah tersimpan: ' + $('vp' + id).value : 'Link baru dibuat. Salin lalu ganti tujuan di vplink.in.');
+    return;
+  }
+
+  const ms = e.target.closest('[data-mkshort]');
+  if (ms) {
+    const id = ms.dataset.mkshort;
+    try {
+      $('vp' + id).value = await makeShort(keyLink(id));
+      await saveOne(id);
+      say('Link VPLink dibuat dan tersimpan: ' + $('vp' + id).value);
+    } catch (err) { say('Gagal membuat link VPLink: ' + (err.message || err) + ' (kalau terblokir CORS, pakai Cloud Function)', true); console.error(err); }
     return;
   }
 
@@ -408,15 +489,21 @@ async function onAction(e) {
   const b = e.target.closest('[data-del]');
   if (!b) return;
   const id = b.dataset.del, nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
-  if (!confirm('Hapus "' + nm + '"? Link key.html?k=' + id + ' akan berhenti bekerja.')) return;
-  try { await deleteDoc(doc(db, 'vpkeys', id)); await deleteDoc(doc(db, 'apps', id)); try { await deleteDoc(doc(db, 'stats', id)); } catch (e2) {} }
+  if (!confirm('Hapus "' + nm + '"? Link key.html?k=' + tokens[id] + ' akan berhenti bekerja.')) return;
+  try { await deleteDoc(doc(db, 'vpkeys', tokens[id])); await deleteDoc(doc(db, 'apps', id)); try { await deleteDoc(doc(db, 'stats', id)); } catch (e2) {} }
   catch (err) { say('Gagal menghapus (cek login / rules Firebase).', true); return; }
   closeEdit();
   $('card' + id).remove();
   ids = ids.filter((x) => x !== id);
-  delete counts[id]; showCounts();
+  delete counts[id]; delete tokens[id]; showCounts();
   say('"' + nm + '" dihapus.');
 }
+$('vpTok').value = getVpTok();
+$('vpTokSave').onclick = () => {
+  const v = $('vpTok').value.trim();
+  try { if (v) localStorage.setItem(VPK, v); else localStorage.removeItem(VPK); say(v ? 'Token VPLink disimpan di browser ini.' : 'Token VPLink dihapus.'); }
+  catch (e) { say('Browser menolak menyimpan token.', true); }
+};
 $('refBtn').onclick = loadCounts;
 $('list').onclick = onAction;
 $('mbody').onclick = onAction;

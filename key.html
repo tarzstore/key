@@ -158,9 +158,9 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
 <script>
   // Salin key dari License Panel ke sini.
   // 'until' hanya teks yang ditampilkan (isi sesuai expiry di panel, kosongkan jika tanpa batas).
-  // Data diambil dari Firebase (diisi lewat admin). mode 'key' = Key saja, 'up' = Username & Password. Link: key.html?k=1 sampai 4
+  // Data diambil dari Firebase (diisi lewat admin). mode 'key' = Key saja, 'up' = Username & Password. Link: key.html?k=TOKEN (token acak dari admin)
   let KEY = { mode: 'key', key: '', user: '', pass: '', until: '' };
-  const APPK = new URLSearchParams(location.search).get('k') || '';
+  const APPK = (new URLSearchParams(location.search).get('k') || '').trim();
   const LOAD_MS = 4500; // lama animasi sebelum key tampil (milidetik)
 
   const $ = (id) => document.getElementById(id);
@@ -328,12 +328,12 @@ async function countTake(db, id) {
   } catch (e) { console.error(e); }
 }
 try {
-  if (APPK) {
+  if (/^[A-Za-z0-9_-]{1,64}$/.test(APPK)) {
     const db = getFirestore(initializeApp(firebaseConfig));
     const snap = await getDoc(doc(db, 'vpkeys', APPK));
     if (snap.exists()) {
-      if (/^\d+$/.test(APPK)) countTake(db, APPK);
-      const d = snap.data();
+      const d = snap.data(), cid = String(d.app || (/^\d+$/.test(APPK) ? APPK : ''));
+      if (cid) countTake(db, cid);
       KEY.mode = d.mode === 'userpass' ? 'up' : 'key';
       KEY.key = String(d.key || '').trim();
       KEY.user = String(d.username || '').trim();
