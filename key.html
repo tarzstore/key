@@ -299,10 +299,10 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
 
   function startApp() {
     const up = KEY.mode === 'up';
-    if (up ? (!KEY.user || !KEY.pass) : !KEY.key) { $('loadView').innerHTML = '<h2>' + (up ? 'Akun' : 'Key') + ' tidak tersedia</h2><p>Link tidak valid atau data belum diisi.</p>'; return; }
+    if (up ? (!KEY.user || !KEY.pass) : !KEY.key) { $('loadView').innerHTML = '<h2>' + (up ? 'Key' : 'Key') + ' tidak tersedia</h2><p>Link tidak valid atau data belum diisi.</p>'; return; }
     if (up) {
-      $('ldTitle').textContent = 'Membuat akun kamu';
-      const t = document.querySelectorAll('.step .t'); t[1].textContent = 'Membuat akun'; t[2].textContent = 'Mengamankan akun';
+      $('ldTitle').textContent = 'Membuat key kamu';
+      const t = document.querySelectorAll('.step .t'); t[1].textContent = 'Membuat key'; t[2].textContent = 'Mengamankan key';
     }
     if (reduce) reveal(); else runLoader(reveal);
   }
