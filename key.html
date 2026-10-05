@@ -74,6 +74,10 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
 .c.dash{color:var(--ink)}
 .keybox.done{background:var(--tint)}
 .keybox.done .c.set{color:var(--blue);text-shadow:2px 2px 0 var(--ink);transition:color .3s calc(var(--k) * 45ms)}
+.lab{margin:16px 0 0;text-align:left;color:var(--muted);font:700 12px/1 var(--body);letter-spacing:.1em;text-transform:uppercase}
+#userBox,#passBox{margin:8px 0 10px;font-size:clamp(17px,5.5vw,22px);letter-spacing:.04em;text-indent:.04em}
+.btn.sm{height:42px;margin-top:0;font-size:13px}
+[hidden]{display:none!important}
 .meta:empty{display:none}
 .meta{margin:0 0 4px;font-size:13px;font-weight:700;color:var(--muted)}
 .actions{opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s}
@@ -115,7 +119,7 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
         <svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="sb" data-burst="12,46,36"/></svg>
         <div class="pct"><b id="pct">0</b><small>%</small></div>
       </div>
-      <h2>Membuat key kamu</h2>
+      <h2 id="ldTitle">Membuat key kamu</h2>
       <p>Tunggu sebentar, jangan tutup halaman ini.</p>
       <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
       <ul class="steps">
@@ -133,12 +137,20 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
       </div>
       <span class="badge">Verifikasi berhasil</span>
       </div>
-      <div class="keybox" id="keyBox" aria-live="polite"></div>
-      <p class="meta" id="meta"></p>
-      <div class="actions" id="actions">
-        <button class="btn" id="copyBtn" type="button"><span id="lbl">Salin key</span></button>
-        <p class="hint">Salin lalu tempel di aplikasi.</p>
+      <div id="keyOnly">
+        <div class="keybox" id="keyBox" aria-live="polite"></div>
+        <div class="actions"><button class="btn" type="button" data-copy="key"><span>Salin key</span></button></div>
       </div>
+      <div id="upOnly" hidden>
+        <div class="lab">Username</div>
+        <div class="keybox" id="userBox" aria-live="polite"></div>
+        <div class="actions"><button class="btn sm" type="button" data-copy="user"><span>Salin username</span></button></div>
+        <div class="lab">Password</div>
+        <div class="keybox" id="passBox" aria-live="polite"></div>
+        <div class="actions"><button class="btn sm" type="button" data-copy="pass"><span>Salin password</span></button></div>
+      </div>
+      <p class="meta" id="meta"></p>
+      <div class="actions"><p class="hint">Salin lalu tempel di aplikasi.</p></div>
     </div>
   </section>
 </main>
@@ -146,8 +158,8 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
 <script>
   // Salin key dari License Panel ke sini.
   // 'until' hanya teks yang ditampilkan (isi sesuai expiry di panel, kosongkan jika tanpa batas).
-  // Key diambil dari Firebase (diisi lewat admin.html). Link: key.html?k=1 sampai 4
-  let KEY = { key: '', until: '' };
+  // Data diambil dari Firebase (diisi lewat admin). mode 'key' = Key saja, 'up' = Username & Password. Link: key.html?k=1 sampai 4
+  let KEY = { mode: 'key', key: '', user: '', pass: '', until: '' };
   const APPK = new URLSearchParams(location.search).get('k') || '';
   const LOAD_MS = 4500; // lama animasi sebelum key tampil (milidetik)
 
@@ -193,7 +205,7 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
   // ---------- confetti kotak ----------
   function burst() {
     if (reduce) return;
-    const box = $('keyBox'), wrap = document.createElement('div');
+    const box = KEY.mode === 'up' ? $('upOnly') : $('keyBox'), wrap = document.createElement('div');
     wrap.className = 'burst';
     wrap.style.top = (box.offsetTop + box.offsetHeight / 2) + 'px';
     const colors = ['var(--blue)', 'var(--ink)', 'var(--tint)', 'var(--white)'];
@@ -210,51 +222,58 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
     setTimeout(() => wrap.remove(), 1300);
   }
 
-  // ---------- key terungkap ----------
-  function decode() {
-    const box = $('keyBox');
-    const chars = [...KEY.key];
-    box.textContent = '';
-    const spans = chars.map((c, i) => {
-      const s = document.createElement('span');
-      s.className = c === '-' ? 'c dash' : 'c';
-      s.style.setProperty('--k', i);
-      if (c === '-') { s.textContent = '-'; s.ready = true; }
-      box.appendChild(s);
-      return s;
-    });
-    const finish = () => {
-      box.classList.add('done');
-      burst();
-      if (KEY.until) $('meta').textContent = 'Berlaku sampai ' + KEY.until + '.';
-      $('actions').classList.add('on');
-    };
-    if (reduce) { chars.forEach((c, i) => { spans[i].textContent = c; if (c !== '-') spans[i].classList.add('set'); }); return finish(); }
-    const t0 = performance.now();
-    const timer = setInterval(() => {
-      const el = performance.now() - t0;
-      let all = true;
-      chars.forEach((c, i) => {
-        if (spans[i].ready) return;
-        if (el >= 300 + i * 110) { spans[i].textContent = c; spans[i].classList.add('set'); spans[i].ready = true; }
-        else { all = false; spans[i].textContent = POOL[Math.floor(Math.random() * POOL.length)]; }
+  // ---------- teks terungkap ----------
+  function decode(box, text) {
+    return new Promise((resolve) => {
+      const chars = [...text];
+      box.textContent = '';
+      const spans = chars.map((c, i) => {
+        const s = document.createElement('span');
+        s.className = c === '-' ? 'c dash' : 'c';
+        s.style.setProperty('--k', i);
+        if (c === '-') { s.textContent = '-'; s.ready = true; }
+        box.appendChild(s);
+        return s;
       });
-      if (all) { clearInterval(timer); finish(); }
-    }, 50);
+      const end = () => { box.classList.add('done'); resolve(); };
+      if (reduce) { chars.forEach((c, i) => { spans[i].textContent = c; if (c !== '-') spans[i].classList.add('set'); }); return end(); }
+      const t0 = performance.now();
+      const timer = setInterval(() => {
+        const el = performance.now() - t0;
+        let all = true;
+        chars.forEach((c, i) => {
+          if (spans[i].ready) return;
+          if (el >= 300 + i * 110) { spans[i].textContent = c; spans[i].classList.add('set'); spans[i].ready = true; }
+          else { all = false; spans[i].textContent = POOL[Math.floor(Math.random() * POOL.length)]; }
+        });
+        if (all) { clearInterval(timer); end(); }
+      }, 50);
+    });
   }
 
   function reveal() {
+    const up = KEY.mode === 'up';
     $('loadView').classList.remove('on');
     $('keyView').classList.add('on');
-    decode();
+    $('keyOnly').hidden = up;
+    $('upOnly').hidden = !up;
+    const jobs = up ? [decode($('userBox'), KEY.user), decode($('passBox'), KEY.pass)] : [decode($('keyBox'), KEY.key)];
+    Promise.all(jobs).then(() => {
+      burst();
+      if (KEY.until) $('meta').textContent = 'Berlaku sampai ' + KEY.until + '.';
+      document.querySelectorAll('.actions').forEach((a) => a.classList.add('on'));
+    });
   }
 
   // ---------- salin ----------
-  $('copyBtn').addEventListener('click', async () => {
-    const btn = $('copyBtn'), lbl = $('lbl');
-    try { await navigator.clipboard.writeText(KEY.key); lbl.textContent = 'Tersalin'; btn.classList.add('ok'); }
-    catch (e) { lbl.textContent = 'Tekan lama pada key untuk menyalin'; }
-    setTimeout(() => { lbl.textContent = 'Salin key'; btn.classList.remove('ok'); }, 2200);
+  document.querySelectorAll('[data-copy]').forEach((btn) => {
+    const lbl = btn.querySelector('span'), orig = lbl.textContent;
+    btn.addEventListener('click', async () => {
+      const v = { key: KEY.key, user: KEY.user, pass: KEY.pass }[btn.dataset.copy];
+      try { await navigator.clipboard.writeText(v); lbl.textContent = 'Tersalin'; btn.classList.add('ok'); }
+      catch (e) { lbl.textContent = 'Tekan lama pada teks untuk menyalin'; }
+      setTimeout(() => { lbl.textContent = orig; btn.classList.remove('ok'); }, 2200);
+    });
   });
 
   // ---------- dekorasi ----------
@@ -279,7 +298,12 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
   });
 
   function startApp() {
-    if (!KEY.key) { $('loadView').innerHTML = '<h2>Key tidak tersedia</h2><p>Link tidak valid atau key belum diisi.</p>'; return; }
+    const up = KEY.mode === 'up';
+    if (up ? (!KEY.user || !KEY.pass) : !KEY.key) { $('loadView').innerHTML = '<h2>' + (up ? 'Akun' : 'Key') + ' tidak tersedia</h2><p>Link tidak valid atau data belum diisi.</p>'; return; }
+    if (up) {
+      $('ldTitle').textContent = 'Membuat akun kamu';
+      const t = document.querySelectorAll('.step .t'); t[1].textContent = 'Membuat akun'; t[2].textContent = 'Mengamankan akun';
+    }
     if (reduce) reveal(); else runLoader(reveal);
   }
 </script>
@@ -297,7 +321,14 @@ const firebaseConfig = {
 try {
   if (APPK) {
     const snap = await getDoc(doc(getFirestore(initializeApp(firebaseConfig)), 'vpkeys', APPK));
-    if (snap.exists()) { KEY.key = String(snap.data().key || '').trim(); KEY.until = String(snap.data().until || '').trim(); }
+    if (snap.exists()) {
+      const d = snap.data();
+      KEY.mode = d.mode === 'userpass' ? 'up' : 'key';
+      KEY.key = String(d.key || '').trim();
+      KEY.user = String(d.username || '').trim();
+      KEY.pass = String(d.password || '').trim();
+      KEY.until = String(d.until || '').trim();
+    }
   }
 } catch (e) { console.error(e); }
 startApp();

@@ -27,9 +27,9 @@ h1{margin:0;font:400 28px/1 var(--head);text-transform:uppercase;letter-spacing:
 .ttl{display:flex;align-items:center;gap:10px;margin:0 0 12px;font:400 16px/1.1 var(--head);text-transform:uppercase}
 .num{flex:none;width:34px;height:34px;display:grid;place-items:center;border:3px solid var(--ink);border-radius:8px;background:var(--blue);color:#fff;box-shadow:2px 2px 0 var(--ink);font:400 16px/1 var(--head)}
 label{display:block;margin:0 0 5px;font:700 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-input{width:100%;height:48px;margin:0 0 12px;padding:0 12px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font:700 16px var(--body);box-shadow:3px 3px 0 var(--ink);outline:0;transition:transform .1s,box-shadow .1s,background .15s}
+input,select{width:100%;height:48px;margin:0 0 12px;padding:0 12px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font:700 16px var(--body);box-shadow:3px 3px 0 var(--ink);outline:0;transition:transform .1s,box-shadow .1s,background .15s}
 input::placeholder{color:#a8a39b;font-weight:500}
-input:focus{background:var(--tint);transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--blue)}
+input:focus,select:focus{background:var(--tint);transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--blue)}
 .link{margin:0;padding:8px 10px;border:2px dashed var(--ink);border-radius:8px;background:var(--paper);font:700 11.5px/1.35 var(--body);color:var(--muted);word-break:break-all}
 
 button{width:100%;height:52px;border:3px solid var(--ink);border-radius:12px;background:var(--blue);color:#fff;cursor:pointer;
@@ -39,6 +39,9 @@ button:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
 button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 button.alt{margin-top:14px;background:var(--yellow);color:var(--ink)}
 button.alt:hover{background:#fff}
+#addBtn{margin:0 0 22px}
+button.del{width:auto;height:32px;margin-left:auto;padding:0 10px;border-radius:8px;background:var(--red);color:#fff;font-size:11px;box-shadow:2px 2px 0 var(--ink)}
+button.del:hover{background:var(--ink)}
 
 #msg{display:none;margin:0 0 20px;padding:12px 14px;border:3px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);font:700 13.5px/1.35 var(--body);animation:pop .4s cubic-bezier(.3,1.6,.5,1) both}
 #msg.ok{display:block;background:var(--green)}
@@ -66,6 +69,7 @@ button.alt:hover{background:#fff}
 
 <section id="panel" hidden>
   <div id="list"></div>
+  <button class="alt" id="addBtn" type="button">+ Tambah aplikasi</button>
   <button id="saveAll" type="button">Simpan semua</button>
   <button class="alt" id="out" type="button">Keluar</button>
 </section>
@@ -83,7 +87,7 @@ button.alt:hover{background:#fff}
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDocs, collection, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDxlcMvfZ1nhJ8WYbjR_y50N7EaY71gRIY",
@@ -95,29 +99,76 @@ const firebaseConfig = {
 };
 
 window.__adminOk = true;
-const APPS = ['TARZ PROXY V1', 'TARZ MODZ PROXY', 'TARZ X MODZ', '8 BALL POOL V10'];
+const DEFAULT_APPS = ['TARZ PROXY V1', 'TARZ MODZ PROXY', 'TARZ X MODZ', '8 BALL POOL V10']; // dipakai hanya jika database masih kosong
+let ids = [];
 const app = initializeApp(firebaseConfig), db = getFirestore(app), auth = getAuth(app);
 const $ = (id) => document.getElementById(id);
 const say = (t, bad) => { const m = $('msg'); m.className = ''; m.textContent = t; if (t) { void m.offsetWidth; m.className = bad ? 'bad' : 'ok'; } };
 const rand = () => { const P = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let r = ''; for (let i = 0; i < 5; i++) r += P[Math.floor(Math.random() * P.length)]; return r; };
 
-$('list').innerHTML = APPS.map((n, i) => `
-  <div class="card">
-    <div class="ttl"><span class="num">${i + 1}</span>${n}</div>
-    <label for="k${i + 1}">Key</label>
-    <input id="k${i + 1}" placeholder="Ketik key di sini" autocomplete="off" spellcheck="false">
-    <label for="u${i + 1}">Berlaku sampai (opsional)</label>
-    <input id="u${i + 1}" placeholder="mis. 31-12-2026" autocomplete="off">
-    <p class="link">Link VPLink: ${location.origin}${location.pathname.replace(/[^/]*$/, '')}key.html?k=${i + 1}</p>
-  </div>`).join('');
+const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+const sync = (id) => { const up = $('m' + id).value === 'userpass'; $('kb' + id).hidden = up; $('ub' + id).hidden = !up; };
 
+function addCard(id, d = {}) {
+  $('list').insertAdjacentHTML('beforeend', `
+  <div class="card" id="card${id}">
+    <div class="ttl"><span class="num">${id}</span>Aplikasi<button type="button" class="del" data-del="${id}">Hapus</button></div>
+    <label for="a${id}">Nama aplikasi</label>
+    <input id="a${id}" placeholder="mis. TARZ PROXY V1" autocomplete="off">
+    <label for="m${id}">Tipe</label>
+    <select id="m${id}"><option value="key">Key</option><option value="userpass">Username &amp; Password</option></select>
+    <div id="kb${id}">
+      <label for="k${id}">Key</label>
+      <input id="k${id}" placeholder="Ketik key di sini" autocomplete="off" spellcheck="false">
+    </div>
+    <div id="ub${id}" hidden>
+      <label for="n${id}">Username</label>
+      <input id="n${id}" placeholder="Ketik username" autocomplete="off" spellcheck="false">
+      <label for="p${id}">Password</label>
+      <input id="p${id}" placeholder="Ketik password" autocomplete="off" spellcheck="false">
+    </div>
+    <label for="u${id}">Berlaku sampai (opsional)</label>
+    <input id="u${id}" placeholder="mis. 31-12-2026" autocomplete="off">
+    <p class="link">Link VPLink: ${base}key.html?k=${id}</p>
+  </div>`);
+  $('a' + id).value = d.name || '';
+  $('m' + id).value = d.mode === 'userpass' ? 'userpass' : 'key';
+  $('k' + id).value = d.key || '';
+  $('n' + id).value = d.username || '';
+  $('p' + id).value = d.password || '';
+  $('u' + id).value = d.until || '';
+  $('m' + id).onchange = () => sync(id);
+  sync(id);
+  ids.push(id);
+}
 
 async function load() {
-  for (let i = 1; i <= 4; i++) {
-    const s = await getDoc(doc(db, 'vpkeys', String(i)));
-    if (s.exists()) { $('k' + i).value = s.data().key || ''; $('u' + i).value = s.data().until || ''; }
-  }
+  const snap = await getDocs(collection(db, 'vpkeys'));
+  const rows = snap.docs.filter((x) => /^\d+$/.test(x.id)).map((x) => ({ id: x.id, ...x.data() })).sort((a, b) => a.id - b.id);
+  $('list').innerHTML = ''; ids = [];
+  if (rows.length) rows.forEach((r) => addCard(r.id, r));
+  else DEFAULT_APPS.forEach((n, i) => addCard(String(i + 1), { name: n }));
 }
+
+$('addBtn').onclick = () => {
+  const id = String(Math.max(0, ...ids.map(Number)) + 1);
+  addCard(id);
+  $('card' + id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  $('a' + id).focus();
+  say('Aplikasi ' + id + ' ditambahkan. Isi datanya lalu klik Simpan semua.');
+};
+
+$('list').onclick = async (e) => {
+  const b = e.target.closest('[data-del]');
+  if (!b) return;
+  const id = b.dataset.del, nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
+  if (!confirm('Hapus "' + nm + '"? Link key.html?k=' + id + ' akan berhenti bekerja.')) return;
+  try { await deleteDoc(doc(db, 'vpkeys', id)); }
+  catch (err) { say('Gagal menghapus (cek login / rules Firebase).', true); return; }
+  $('card' + id).remove();
+  ids = ids.filter((x) => x !== id);
+  say('"' + nm + '" dihapus.');
+};
 
 $('loginBtn').onclick = async () => {
   try { await signInWithEmailAndPassword(auth, $('em').value.trim(), $('pw').value); say(''); }
@@ -139,10 +190,18 @@ $('out').onclick = () => signOut(auth);
 
 $('saveAll').onclick = async () => {
   try {
-    for (let i = 1; i <= 4; i++) {
-      await setDoc(doc(db, 'vpkeys', String(i)), { name: APPS[i - 1], key: $('k' + i).value.trim(), until: $('u' + i).value.trim(), updated: serverTimestamp() });
+    for (const id of ids) {
+      await setDoc(doc(db, 'vpkeys', id), {
+        name: $('a' + id).value.trim() || ('Aplikasi ' + id),
+        mode: $('m' + id).value,
+        key: $('k' + id).value.trim(),
+        username: $('n' + id).value.trim(),
+        password: $('p' + id).value.trim(),
+        until: $('u' + id).value.trim(),
+        updated: serverTimestamp()
+      });
     }
-    say('Tersimpan. Key baru langsung aktif.');
+    say('Tersimpan. Perubahan langsung aktif.');
   } catch (e) { say('Gagal menyimpan (cek login / rules Firebase).', true); }
 };
 
