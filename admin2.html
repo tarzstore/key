@@ -40,8 +40,52 @@ button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 button.alt{margin-top:14px;background:var(--yellow);color:var(--ink)}
 button.alt:hover{background:#fff}
 #addBtn{margin:0 0 22px}
-button.del{width:auto;height:32px;margin-left:auto;padding:0 10px;border-radius:8px;background:var(--red);color:#fff;font-size:11px;box-shadow:2px 2px 0 var(--ink)}
-button.del:hover{background:var(--ink)}
+.card.off{opacity:.6}
+.cnt{display:inline-block;margin-left:6px;padding:4px 8px 3px;border:2px solid var(--ink);border-radius:6px;background:var(--yellow);font:700 10px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
+.total{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 22px;padding:12px 14px;border:3px solid var(--ink);border-radius:14px;background:var(--yellow);box-shadow:5px 5px 0 var(--ink);font:400 18px/1 var(--head);text-transform:uppercase}
+.total button{width:auto;height:36px;padding:0 12px;font-size:11px;box-shadow:3px 3px 0 var(--ink)}
+button.cpy{height:40px;margin:8px 0 14px;font-size:12px;border-radius:10px;background:var(--yellow);color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+button.cpy:hover{background:var(--ink);color:#fff}
+button.cpy.ok{background:var(--green);color:var(--ink)}
+.acts .rst{flex:1;width:auto;margin:0;height:44px;padding:0 8px;font-size:12px;border-radius:12px;box-shadow:3px 3px 0 var(--ink);background:#fff;color:var(--ink)}
+.acts .rst:hover{background:var(--ink);color:#fff}
+
+.row{display:flex;align-items:center;gap:12px}
+.pv{flex:none;display:grid;place-items:center;overflow:hidden;border:3px solid var(--ink);border-radius:14px;background:var(--tint);box-shadow:3px 3px 0 var(--ink);color:var(--muted);text-align:center}
+.row .pv{width:64px;height:64px}
+.big{width:84px;height:84px}
+.pv img{width:100%;height:100%;object-fit:cover;display:block}
+.pv small{display:block;padding:3px;font:700 9px/1.2 var(--body);letter-spacing:.05em;text-transform:uppercase}
+.inf{flex:1;min-width:0}
+.nm{display:block;margin:0 0 6px;font:400 16px/1.15 var(--head);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st{display:inline-block;padding:4px 8px 3px;border:2px solid var(--ink);border-radius:6px;background:var(--green);font:700 10px/1 var(--body);letter-spacing:.08em;text-transform:uppercase}
+.card.off .st{background:var(--muted);color:#fff}
+button.edit{flex:none;width:auto;height:40px;padding:0 14px;border-radius:10px;background:var(--yellow);color:var(--ink);font-size:12px;box-shadow:3px 3px 0 var(--ink)}
+button.edit:hover{background:var(--blue);color:#fff}
+.card{padding:22px 14px 14px}
+.top2{display:flex;gap:12px;align-items:flex-start;margin:0 0 4px}
+.top2 .fld{flex:1;min-width:0}
+.sec{display:flex;align-items:center;gap:8px;margin:16px 0 10px;font:400 12px/1 var(--head);text-transform:uppercase;letter-spacing:.04em}
+.sec::after{content:"";flex:1;height:3px;background:var(--ink);border-radius:2px;opacity:.15}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+@media(max-width:380px){.row2{grid-template-columns:1fr}}
+.acts{display:flex;gap:10px;margin-top:6px}
+.acts button{height:44px;margin:0;font-size:12px}
+.acts .tog,.acts .del{flex:1;width:auto;margin:0;height:44px;padding:0 8px;font-size:12px;border-radius:12px;box-shadow:3px 3px 0 var(--ink)}
+.acts .tog{background:var(--yellow);color:var(--ink)}
+.acts .del{background:var(--red);color:#fff}
+.acts .tog:hover,.acts .del:hover{background:var(--ink);color:#fff}
+#modal{position:fixed;inset:0;z-index:20;overflow-y:auto;overscroll-behavior:contain;background:rgba(11,11,15,.6);padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(24px + env(safe-area-inset-bottom,0px))}
+.sheet{max-width:460px;margin:0 auto;padding:16px;border:3px solid var(--ink);border-radius:18px;background:#fff;box-shadow:7px 7px 0 var(--ink);animation:pop .3s cubic-bezier(.3,1.5,.5,1) both}
+.mh{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.mh b{flex:1;font:400 16px/1.1 var(--head);text-transform:uppercase}
+button.x{flex:none;width:40px;height:40px;padding:0;border-radius:10px;background:var(--ink);font-size:16px;box-shadow:3px 3px 0 var(--blue)}
+#mmsg{display:none;margin:0 0 14px;padding:10px 12px;border:3px solid var(--ink);border-radius:12px;font:700 13px/1.35 var(--body)}
+#mmsg.ok{display:block;background:var(--green)}
+#mmsg.bad{display:block;background:var(--red);color:#fff}
+.sheet .save{margin-top:14px;background:var(--green);color:var(--ink)}
+.sheet .save:hover{background:var(--ink);color:#fff}
+body.lock{overflow:hidden}
 
 #msg{display:none;margin:0 0 20px;padding:12px 14px;border:3px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);font:700 13.5px/1.35 var(--body);animation:pop .4s cubic-bezier(.3,1.6,.5,1) both}
 #msg.ok{display:block;background:var(--green)}
@@ -68,12 +112,21 @@ button.del:hover{background:var(--ink)}
 </section>
 
 <section id="panel" hidden>
+  <div class="total"><span id="totalTxt">Total Keys: 0</span><button type="button" id="refBtn">Refresh</button></div>
   <div id="list"></div>
   <button class="alt" id="addBtn" type="button">+ Tambah aplikasi</button>
   <button id="saveAll" type="button">Simpan semua</button>
   <button class="alt" id="out" type="button">Keluar</button>
 </section>
 </main>
+
+<div id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <div class="mh"><b id="mt">Edit aplikasi</b><button class="x" id="mclose" type="button" aria-label="Tutup">✕</button></div>
+    <div id="mmsg" role="status"></div>
+    <div id="mbody"></div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -99,37 +152,128 @@ const firebaseConfig = {
 };
 
 window.__adminOk = true;
-const DEFAULT_APPS = ['TARZ PROXY V1', 'TARZ MODZ PROXY', 'TARZ X MODZ', '8 BALL POOL V10']; // dipakai hanya jika database masih kosong
+// Data awal (dari index.html lama) - dipakai jika database masih kosong / field logo & link belum terisi
+const DEFAULT_APPS = [
+  { name: 'TARZ PROXY V1',   logo: 'https://i.ibb.co.com/YT3cv6Y3/product.jpg', install: 'https://www.mediafire.com/file/cw9f4lmkrwjx8ff/TarzProxy.apk/file', link: 'https://vplink.in/tarz1' },
+  { name: 'TARZ MODZ PROXY', logo: 'https://i.ibb.co.com/bhf84LY/product.jpg',  install: 'https://www.mediafire.com/file/3wguz3vn187z1ch/Tarz_Modz_Proxy.release.apk/file', link: 'https://vplink.in/bhjfcff' },
+  { name: 'TARZ X MODZ',     logo: 'https://i.ibb.co.com/gbv5tGt8/product.jpg', install: 'https://www.mediafire.com/file/pj1iipmidto2xr6/TARZ+MODZ+V3.apk/file', link: 'https://vplink.in/bhjjnbb' },
+  { name: '8 BALL POOL V10', logo: 'https://i.ibb.co.com/674DCgnZ/product.jpg', install: 'https://www.mediafire.com/file/81gji9qdaqofycn/8+Ball+Poll+V10.apk/file', link: 'https://vplink.in/bhjcxxz' }
+];
 let ids = [];
 const app = initializeApp(firebaseConfig), db = getFirestore(app), auth = getAuth(app);
 const $ = (id) => document.getElementById(id);
-const say = (t, bad) => { const m = $('msg'); m.className = ''; m.textContent = t; if (t) { void m.offsetWidth; m.className = bad ? 'bad' : 'ok'; } };
+const say = (t, bad) => {
+  for (const m of [$('msg'), $('mmsg')]) { m.className = ''; m.textContent = t; if (t) { void m.offsetWidth; m.className = bad ? 'bad' : 'ok'; } }
+};
 const rand = () => { const P = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let r = ''; for (let i = 0; i < 5; i++) r += P[Math.floor(Math.random() * P.length)]; return r; };
 
 const base = location.origin + location.pathname.replace(/[^/]*$/, '');
 const sync = (id) => { const up = $('m' + id).value === 'userpass'; $('kb' + id).hidden = up; $('ub' + id).hidden = !up; };
 
+const pvT = {};
+let cur = null;
+const isOn = (id) => $('card' + id).dataset.active !== '0';
+function setActive(id, on) {
+  const c = $('card' + id);
+  c.dataset.active = on ? '1' : '0';
+  c.classList.toggle('off', !on);
+  $('tg' + id).textContent = on ? 'Nonaktifkan' : 'Aktifkan';
+  $('st' + id).textContent = on ? 'Aktif' : 'Nonaktif';
+}
+
+function setPv(id) {
+  const url = $('lg' + id).value.trim();
+  for (const pv of [$('pv' + id), $('pm' + id)]) {
+    pv.innerHTML = '';
+    const empty = (t) => { pv.innerHTML = '<small>' + t + '</small>'; };
+    if (!url) { empty('Tanpa logo'); continue; }
+    const img = new Image();
+    img.referrerPolicy = 'no-referrer';
+    img.alt = '';
+    img.onerror = () => empty('Gambar gagal dimuat');
+    img.src = url;
+    pv.appendChild(img);
+  }
+}
+
+function openEdit(id) {
+  closeEdit();
+  const f = $('form' + id);
+  $('mbody').appendChild(f);
+  f.hidden = false;
+  $('mt').textContent = 'Edit aplikasi ' + id;
+  say('');
+  $('modal').hidden = false;
+  $('modal').scrollTop = 0;
+  document.body.classList.add('lock');
+  cur = id;
+}
+function closeEdit() {
+  if (!cur) return;
+  const f = $('form' + cur), c = $('card' + cur);
+  if (f && c) { f.hidden = true; c.appendChild(f); }
+  $('modal').hidden = true;
+  document.body.classList.remove('lock');
+  cur = null;
+}
+
 function addCard(id, d = {}) {
   $('list').insertAdjacentHTML('beforeend', `
   <div class="card" id="card${id}">
-    <div class="ttl"><span class="num">${id}</span>Aplikasi<button type="button" class="del" data-del="${id}">Hapus</button></div>
-    <label for="a${id}">Nama aplikasi</label>
-    <input id="a${id}" placeholder="mis. TARZ PROXY V1" autocomplete="off">
-    <label for="m${id}">Tipe</label>
-    <select id="m${id}"><option value="key">Key</option><option value="userpass">Username &amp; Password</option></select>
-    <div id="kb${id}">
-      <label for="k${id}">Key</label>
-      <input id="k${id}" placeholder="Ketik key di sini" autocomplete="off" spellcheck="false">
+    <div class="row">
+      <div class="pv" id="pv${id}"></div>
+      <div class="inf"><span class="nm" id="nm${id}"></span><span class="st" id="st${id}">Aktif</span><span class="cnt" id="ct${id}">Keys: 0</span></div>
+      <button type="button" class="edit" data-edit="${id}">Edit</button>
     </div>
-    <div id="ub${id}" hidden>
-      <label for="n${id}">Username</label>
-      <input id="n${id}" placeholder="Ketik username" autocomplete="off" spellcheck="false">
-      <label for="p${id}">Password</label>
-      <input id="p${id}" placeholder="Ketik password" autocomplete="off" spellcheck="false">
+
+    <div class="form" id="form${id}" hidden>
+      <div class="top2">
+        <div class="pv big" id="pm${id}"></div>
+        <div class="fld">
+          <label for="a${id}">Nama aplikasi</label>
+          <input id="a${id}" placeholder="mis. TARZ PROXY V1" autocomplete="off">
+          <label for="lg${id}">Link logo (gambar)</label>
+          <input id="lg${id}" type="url" placeholder="https://i.ibb.co.com/..." autocomplete="off" spellcheck="false" style="margin:0">
+        </div>
+      </div>
+
+      <div class="sec">Akses</div>
+      <div class="row2">
+        <div>
+          <label for="m${id}">Tipe</label>
+          <select id="m${id}"><option value="key">Key</option><option value="userpass">Username &amp; Password</option></select>
+        </div>
+        <div>
+          <label for="u${id}">Berlaku sampai</label>
+          <input id="u${id}" placeholder="opsional" autocomplete="off">
+        </div>
+      </div>
+      <div id="kb${id}">
+        <label for="k${id}">Key</label>
+        <input id="k${id}" placeholder="Ketik key di sini" autocomplete="off" spellcheck="false">
+      </div>
+      <div id="ub${id}" hidden>
+        <div class="row2">
+          <div><label for="n${id}">Username</label><input id="n${id}" placeholder="Username" autocomplete="off" spellcheck="false"></div>
+          <div><label for="p${id}">Password</label><input id="p${id}" placeholder="Password" autocomplete="off" spellcheck="false"></div>
+        </div>
+      </div>
+
+      <div class="sec">Link</div>
+      <label for="mf${id}">MediaFire (tombol Install)</label>
+      <input id="mf${id}" type="url" placeholder="https://www.mediafire.com/file/..." autocomplete="off" spellcheck="false">
+      <label for="vp${id}">VPLink (tombol Get Key)</label>
+      <input id="vp${id}" type="url" placeholder="https://vplink.in/xxxx" autocomplete="off" spellcheck="false">
+      <p class="link">Tujuan link VPLink (isi saat bikin link di vplink.in):<br>${base}key.html?k=${id}</p>
+      <button type="button" class="cpy" data-copylink="${id}">Salin link</button>
+
+      <button type="button" class="save" data-save="${id}">Simpan aplikasi ini</button>
+      <div class="acts">
+        <button type="button" class="tog" id="tg${id}" data-tog="${id}">Nonaktifkan</button>
+        <button type="button" class="rst" data-reset="${id}">Reset</button>
+        <button type="button" class="del" data-del="${id}">Hapus</button>
+      </div>
     </div>
-    <label for="u${id}">Berlaku sampai (opsional)</label>
-    <input id="u${id}" placeholder="mis. 31-12-2026" autocomplete="off">
-    <p class="link">Link VPLink: ${base}key.html?k=${id}</p>
   </div>`);
   $('a' + id).value = d.name || '';
   $('m' + id).value = d.mode === 'userpass' ? 'userpass' : 'key';
@@ -137,38 +281,148 @@ function addCard(id, d = {}) {
   $('n' + id).value = d.username || '';
   $('p' + id).value = d.password || '';
   $('u' + id).value = d.until || '';
+  $('lg' + id).value = d.logo || '';
+  $('mf' + id).value = d.install || '';
+  $('vp' + id).value = d.link || '';
+  $('nm' + id).textContent = d.name || ('Aplikasi ' + id);
+  setActive(id, d.active !== false);
   $('m' + id).onchange = () => sync(id);
+  $('a' + id).addEventListener('input', () => { $('nm' + id).textContent = $('a' + id).value.trim() || ('Aplikasi ' + id); });
+  $('lg' + id).addEventListener('input', () => { clearTimeout(pvT[id]); pvT[id] = setTimeout(() => setPv(id), 400); });
+  setPv(id);
   sync(id);
   ids.push(id);
 }
 
+const cap = (n) => Math.max(0, Math.min(9999, Number(n) || 0));
+let counts = {};
+function showCounts() {
+  let sum = 0;
+  for (const id of ids) { const n = cap(counts[id]); sum += n; const el = $('ct' + id); if (el) el.textContent = 'Keys: ' + n; }
+  $('totalTxt').textContent = 'Total Keys: ' + sum;
+}
+async function loadCounts() {
+  counts = {};
+  try { (await getDocs(collection(db, 'stats'))).forEach((x) => { counts[x.id] = x.data().count; }); }
+  catch (e) { say('Gagal memuat hitungan Keys (cek rules Firebase).', true); console.error(e); }
+  showCounts();
+}
+
 async function load() {
   const snap = await getDocs(collection(db, 'vpkeys'));
+  let extra = {};
+  try { (await getDocs(collection(db, 'apps'))).forEach((x) => { extra[x.id] = x.data(); }); } catch (e) { /* koleksi apps belum ada / rules belum diatur */ }
   const rows = snap.docs.filter((x) => /^\d+$/.test(x.id)).map((x) => ({ id: x.id, ...x.data() })).sort((a, b) => a.id - b.id);
   $('list').innerHTML = ''; ids = [];
-  if (rows.length) rows.forEach((r) => addCard(r.id, r));
-  else DEFAULT_APPS.forEach((n, i) => addCard(String(i + 1), { name: n }));
+  if (rows.length) rows.forEach((r) => {
+    const df = DEFAULT_APPS[Number(r.id) - 1] || {};
+    const e = extra[r.id] || {};
+    addCard(r.id, { ...r, logo: e.logo || df.logo, install: e.install || df.install, link: e.link || df.link, active: e.active });
+  });
+  else DEFAULT_APPS.forEach((d, i) => addCard(String(i + 1), d));
+  await loadCounts();
 }
 
 $('addBtn').onclick = () => {
   const id = String(Math.max(0, ...ids.map(Number)) + 1);
   addCard(id);
-  $('card' + id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  showCounts();
+  openEdit(id);
   $('a' + id).focus();
-  say('Aplikasi ' + id + ' ditambahkan. Isi datanya lalu klik Simpan semua.');
+  say('Aplikasi ' + id + ' baru. Isi datanya lalu klik "Simpan aplikasi ini".');
 };
 
-$('list').onclick = async (e) => {
+async function saveOne(id) {
+  const name = $('a' + id).value.trim() || ('Aplikasi ' + id);
+  await setDoc(doc(db, 'vpkeys', id), {
+    name,
+    mode: $('m' + id).value,
+    key: $('k' + id).value.trim(),
+    username: $('n' + id).value.trim(),
+    password: $('p' + id).value.trim(),
+    until: $('u' + id).value.trim(),
+    updated: serverTimestamp()
+  });
+  // data publik untuk halaman index (tanpa key/password)
+  await setDoc(doc(db, 'apps', id), {
+    name,
+    logo: $('lg' + id).value.trim(),
+    install: $('mf' + id).value.trim(),
+    link: $('vp' + id).value.trim(),
+    order: Number(id),
+    active: isOn(id),
+    updated: serverTimestamp()
+  });
+  $('nm' + id).textContent = name;
+}
+
+async function onAction(e) {
+  const ed = e.target.closest('[data-edit]');
+  if (ed) { openEdit(ed.dataset.edit); return; }
+
+  const sv = e.target.closest('[data-save]');
+  if (sv) {
+    const id = sv.dataset.save;
+    try { await saveOne(id); say('Tersimpan. Perubahan langsung aktif.'); }
+    catch (err) { say('Gagal menyimpan (cek login / rules Firebase).', true); console.error(err); }
+    return;
+  }
+
+  const cp = e.target.closest('[data-copylink]');
+  if (cp) {
+    const text = base + 'key.html?k=' + cp.dataset.copylink, orig = 'Salin link';
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; }
+    catch (err) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta);
+      ta.select(); try { ok = document.execCommand('copy'); } catch (e2) {} ta.remove();
+    }
+    cp.textContent = ok ? 'Tersalin' : 'Gagal, salin manual';
+    cp.classList.toggle('ok', ok);
+    setTimeout(() => { cp.textContent = orig; cp.classList.remove('ok'); }, 2000);
+    return;
+  }
+
+  const rs = e.target.closest('[data-reset]');
+  if (rs) {
+    const id = rs.dataset.reset, nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
+    if (!confirm('Reset hitungan Keys "' + nm + '" ke 0?')) return;
+    try { await setDoc(doc(db, 'stats', id), { count: 0, last: serverTimestamp() }); }
+    catch (err) { say('Gagal reset (cek login / rules Firebase).', true); console.error(err); return; }
+    counts[id] = 0; showCounts();
+    say('Hitungan Keys "' + nm + '" direset ke 0.');
+    return;
+  }
+
+  const t = e.target.closest('[data-tog]');
+  if (t) {
+    const id = t.dataset.tog, on = !isOn(id), nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
+    try { await setDoc(doc(db, 'apps', id), { active: on, updated: serverTimestamp() }, { merge: true }); }
+    catch (err) { say('Gagal mengubah status (cek login / rules Firebase).', true); return; }
+    setActive(id, on);
+    say('"' + nm + '" ' + (on ? 'diaktifkan, tampil di Index.' : 'dinonaktifkan, hilang dari Index.'));
+    return;
+  }
+
   const b = e.target.closest('[data-del]');
   if (!b) return;
   const id = b.dataset.del, nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
   if (!confirm('Hapus "' + nm + '"? Link key.html?k=' + id + ' akan berhenti bekerja.')) return;
-  try { await deleteDoc(doc(db, 'vpkeys', id)); }
+  try { await deleteDoc(doc(db, 'vpkeys', id)); await deleteDoc(doc(db, 'apps', id)); try { await deleteDoc(doc(db, 'stats', id)); } catch (e2) {} }
   catch (err) { say('Gagal menghapus (cek login / rules Firebase).', true); return; }
+  closeEdit();
   $('card' + id).remove();
   ids = ids.filter((x) => x !== id);
+  delete counts[id]; showCounts();
   say('"' + nm + '" dihapus.');
-};
+}
+$('refBtn').onclick = loadCounts;
+$('list').onclick = onAction;
+$('mbody').onclick = onAction;
+$('mclose').onclick = closeEdit;
+$('modal').onclick = (e) => { if (e.target === $('modal')) closeEdit(); };
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeEdit(); });
 
 $('loginBtn').onclick = async () => {
   try { await signInWithEmailAndPassword(auth, $('em').value.trim(), $('pw').value); say(''); }
@@ -186,23 +440,13 @@ $('loginBtn').onclick = async () => {
     console.error(e);
   }
 };
-$('out').onclick = () => signOut(auth);
+$('out').onclick = () => { closeEdit(); signOut(auth); };
 
 $('saveAll').onclick = async () => {
   try {
-    for (const id of ids) {
-      await setDoc(doc(db, 'vpkeys', id), {
-        name: $('a' + id).value.trim() || ('Aplikasi ' + id),
-        mode: $('m' + id).value,
-        key: $('k' + id).value.trim(),
-        username: $('n' + id).value.trim(),
-        password: $('p' + id).value.trim(),
-        until: $('u' + id).value.trim(),
-        updated: serverTimestamp()
-      });
-    }
-    say('Tersimpan. Perubahan langsung aktif.');
-  } catch (e) { say('Gagal menyimpan (cek login / rules Firebase).', true); }
+    for (const id of ids) await saveOne(id);
+    say('Semua tersimpan. Perubahan langsung aktif.');
+  } catch (e) { say('Gagal menyimpan (cek login / rules Firebase).', true); console.error(e); }
 };
 
 onAuthStateChanged(auth, async (u) => {

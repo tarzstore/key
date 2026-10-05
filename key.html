@@ -309,7 +309,7 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDxlcMvfZ1nhJ8WYbjR_y50N7EaY71gRIY",
   authDomain: "free-key-3024b.firebaseapp.com",
@@ -318,10 +318,21 @@ const firebaseConfig = {
   messagingSenderId: "766189284478",
   appId: "1:766189284478:web:524ba727e03eedde53bc2f"
 };
+// Hitung orang yang mengambil key (0-9999). Dihitung sekali per browser per hari agar refresh tidak menambah.
+async function countTake(db, id) {
+  const day = new Date().toISOString().slice(0, 10), k = 'kc_' + id;
+  try { if (localStorage.getItem(k) === day) return; } catch (e) {}
+  try {
+    await setDoc(doc(db, 'stats', id), { count: increment(1), last: serverTimestamp() }, { merge: true });
+    try { localStorage.setItem(k, day); } catch (e) {}
+  } catch (e) { console.error(e); }
+}
 try {
   if (APPK) {
-    const snap = await getDoc(doc(getFirestore(initializeApp(firebaseConfig)), 'vpkeys', APPK));
+    const db = getFirestore(initializeApp(firebaseConfig));
+    const snap = await getDoc(doc(db, 'vpkeys', APPK));
     if (snap.exists()) {
+      if (/^\d+$/.test(APPK)) countTake(db, APPK);
       const d = snap.data();
       KEY.mode = d.mode === 'userpass' ? 'up' : 'key';
       KEY.key = String(d.key || '').trim();
