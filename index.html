@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -155,8 +155,8 @@ button.tut{appearance:none;-webkit-appearance:none;padding:0;cursor:pointer}
       <svg class="spk a"><use href="#sp"/></svg>
       <svg class="spk b"><use href="#sp"/></svg>
     </span>
-    <h1><i class="dot"></i><span id="count">Pilih aplikasi</span></h1>
-    <p class="sub">Install aplikasinya, lalu ambil key gratis.</p>
+    <h1><i class="dot"></i><span id="count">Choose an app</span></h1>
+    <p class="sub">Install the app, then get your free key.</p>
   </header>
   <div class="grid" id="list"><div class="sk"></div><div class="sk"></div></div>
 </main>
@@ -166,7 +166,7 @@ button.tut{appearance:none;-webkit-appearance:none;padding:0;cursor:pointer}
 </div>
 <div class="vmodal" id="vmodal" role="dialog" aria-modal="true" aria-label="Tutorial Get Key" hidden>
   <div class="vbox">
-    <div class="vbar"><span>Tutorial Get Key</span><button type="button" class="vx" id="vclose" aria-label="Tutup video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+    <div class="vbar"><span>Tutorial Get Key</span><button type="button" class="vx" id="vclose" aria-label="Close video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
     <video id="vplayer" controls playsinline preload="none"></video>
   </div>
 </div>
@@ -204,7 +204,7 @@ async function loadApps() {
       .filter((r) => r.name && r.link && r.active !== false)
       .sort((a, b) => (a.order ?? Number(a.id)) - (b.order ?? Number(b.id)));
     return snap.empty ? FALLBACK : rows; // kalau semua dinonaktifkan, daftar kosong (bukan cadangan)
-  } catch (e) { console.warn('Pakai data cadangan:', e); return FALLBACK; }
+  } catch (e) { console.warn('Using fallback data:', e); return FALLBACK; }
 }
 
 const DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13M6 11l6 6 6-6M4 21h16"/></svg>';
@@ -212,7 +212,7 @@ const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 
 const list = document.getElementById('list');
 const apps = await loadApps();
 list.innerHTML = '';
-document.getElementById('count').textContent = apps.length ? apps.length + ' aplikasi siap dipakai' : 'Belum ada aplikasi';
+document.getElementById('count').textContent = apps.length ? apps.length + ' apps ready to use' : 'No apps yet';
 
 apps.forEach((app, i) => {
   const a = document.createElement('div');

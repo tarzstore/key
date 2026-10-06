@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Key kamu</title>
+<title>Your key</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@500;700&display=swap">
@@ -119,13 +119,13 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
         <svg viewBox="0 0 100 100" aria-hidden="true"><polygon class="sb" data-burst="12,46,36"/></svg>
         <div class="pct"><b id="pct">0</b><small>%</small></div>
       </div>
-      <h2 id="ldTitle">Membuat key kamu</h2>
-      <p>Tunggu sebentar, jangan tutup halaman ini.</p>
+      <h2 id="ldTitle">Creating your key</h2>
+      <p>Please wait, don't close this page.</p>
       <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
       <ul class="steps">
-        <li class="step"><span class="d"></span><span class="t">Memeriksa verifikasi</span></li>
-        <li class="step"><span class="d"></span><span class="t">Membuat key</span></li>
-        <li class="step"><span class="d"></span><span class="t">Mengamankan key</span></li>
+        <li class="step"><span class="d"></span><span class="t">Checking verification</span></li>
+        <li class="step"><span class="d"></span><span class="t">Creating key</span></li>
+        <li class="step"><span class="d"></span><span class="t">Securing key</span></li>
       </ul>
     </div>
 
@@ -135,22 +135,22 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
         <svg class="s" viewBox="0 0 100 100"><polygon class="sb" data-burst="12,46,36"/></svg>
         <svg class="tick" viewBox="0 0 48 48"><path d="M10 25l10 10 18-20"/></svg>
       </div>
-      <span class="badge">Verifikasi berhasil</span>
+      <span class="badge">Verification successful</span>
       </div>
       <div id="keyOnly">
         <div class="keybox" id="keyBox" aria-live="polite"></div>
-        <div class="actions"><button class="btn" type="button" data-copy="key"><span>Salin key</span></button></div>
+        <div class="actions"><button class="btn" type="button" data-copy="key"><span>Copy key</span></button></div>
       </div>
       <div id="upOnly" hidden>
         <div class="lab">Username</div>
         <div class="keybox" id="userBox" aria-live="polite"></div>
-        <div class="actions"><button class="btn sm" type="button" data-copy="user"><span>Salin username</span></button></div>
+        <div class="actions"><button class="btn sm" type="button" data-copy="user"><span>Copy username</span></button></div>
         <div class="lab">Password</div>
         <div class="keybox" id="passBox" aria-live="polite"></div>
-        <div class="actions"><button class="btn sm" type="button" data-copy="pass"><span>Salin password</span></button></div>
+        <div class="actions"><button class="btn sm" type="button" data-copy="pass"><span>Copy password</span></button></div>
       </div>
       <p class="meta" id="meta"></p>
-      <div class="actions"><p class="hint">Salin lalu tempel di aplikasi.</p></div>
+      <div class="actions"><p class="hint">Copy it, then paste it in the app.</p></div>
     </div>
   </section>
 </main>
@@ -260,7 +260,7 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
     const jobs = up ? [decode($('userBox'), KEY.user), decode($('passBox'), KEY.pass)] : [decode($('keyBox'), KEY.key)];
     Promise.all(jobs).then(() => {
       burst();
-      if (KEY.until) $('meta').textContent = 'Berlaku sampai ' + KEY.until + '.';
+      if (KEY.until) $('meta').textContent = 'Valid until ' + KEY.until + '.';
       document.querySelectorAll('.actions').forEach((a) => a.classList.add('on'));
     });
   }
@@ -270,8 +270,8 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
     const lbl = btn.querySelector('span'), orig = lbl.textContent;
     btn.addEventListener('click', async () => {
       const v = { key: KEY.key, user: KEY.user, pass: KEY.pass }[btn.dataset.copy];
-      try { await navigator.clipboard.writeText(v); lbl.textContent = 'Tersalin'; btn.classList.add('ok'); }
-      catch (e) { lbl.textContent = 'Tekan lama pada teks untuk menyalin'; }
+      try { await navigator.clipboard.writeText(v); lbl.textContent = 'Copied'; btn.classList.add('ok'); }
+      catch (e) { lbl.textContent = 'Long-press the text to copy'; }
       setTimeout(() => { lbl.textContent = orig; btn.classList.remove('ok'); }, 2200);
     });
   });
@@ -299,10 +299,10 @@ main{position:relative;z-index:1;width:100%;max-width:380px;margin:auto}
 
   function startApp() {
     const up = KEY.mode === 'up';
-    if (up ? (!KEY.user || !KEY.pass) : !KEY.key) { $('loadView').innerHTML = '<h2>' + (up ? 'Key' : 'Key') + ' tidak tersedia</h2><p>Link tidak valid atau data belum diisi.</p>'; return; }
+    if (up ? (!KEY.user || !KEY.pass) : !KEY.key) { $('loadView').innerHTML = '<h2>Key not available</h2><p>The link is invalid or the data has not been filled in.</p>'; return; }
     if (up) {
-      $('ldTitle').textContent = 'Membuat key kamu';
-      const t = document.querySelectorAll('.step .t'); t[1].textContent = 'Membuat key'; t[2].textContent = 'Mengamankan key';
+      $('ldTitle').textContent = 'Creating your key';
+      const t = document.querySelectorAll('.step .t'); t[1].textContent = 'Creating key'; t[2].textContent = 'Securing key';
     }
     if (reduce) reveal(); else runLoader(reveal);
   }
