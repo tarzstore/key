@@ -41,6 +41,13 @@ button.alt{margin-top:14px;background:var(--yellow);color:var(--ink)}
 button.alt:hover{background:#fff}
 #addBtn{margin:0 0 22px}
 .card.off{opacity:.6}
+.card .row{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.card.drag{scale:1.02;z-index:5;box-shadow:10px 10px 0 var(--blue);cursor:grabbing}
+.mv{flex:none;display:flex;flex-direction:column;gap:6px}
+button.mvb{width:34px;height:28px;padding:0;border-radius:8px;background:#fff;color:var(--ink);font-size:11px;letter-spacing:0;box-shadow:2px 2px 0 var(--ink)}
+button.mvb:hover{background:var(--ink);color:#fff}
+button.mvb:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+.rgt{display:block;margin-top:6px;font:700 10px/1.35 var(--body);letter-spacing:.03em;color:var(--muted)}
 .cnt{display:inline-block;margin-left:6px;padding:4px 8px 3px;border:2px solid var(--ink);border-radius:6px;background:var(--yellow);font:700 10px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
 .total{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 22px;padding:12px 14px;border:3px solid var(--ink);border-radius:14px;background:var(--yellow);box-shadow:5px 5px 0 var(--ink);font:400 18px/1 var(--head);text-transform:uppercase}
 .total button{width:auto;height:36px;padding:0 12px;font-size:11px;box-shadow:3px 3px 0 var(--ink)}
@@ -95,6 +102,145 @@ body.lock{overflow:hidden}
 @keyframes pop{from{opacity:0;transform:scale(.85)}}
 @keyframes bob{to{translate:0 -14px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+
+/* ===== tampilan edit aplikasi ===== */
+.sheet{padding:0 16px 16px;overflow:visible}
+.mh{position:sticky;top:0;z-index:3;margin:0 -16px 16px;padding:14px 16px 12px;border-bottom:3px solid var(--ink);border-radius:15px 15px 0 0;background:var(--yellow)}
+.mh b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp{position:relative;margin:0 0 22px;padding:26px 12px 12px;border:3px solid var(--ink);border-radius:14px;background:#faf8f3}
+.gh{position:absolute;top:-14px;left:10px;display:flex;align-items:center;gap:7px;padding:3px 10px 3px 3px;border:3px solid var(--ink);border-radius:8px;background:#fff;box-shadow:2px 2px 0 var(--ink);font:400 11px/1 var(--head);letter-spacing:.04em;text-transform:uppercase}
+.gh i{display:grid;place-items:center;width:20px;height:20px;border-radius:5px;background:var(--blue);color:#fff;font:400 11px/1 var(--head);font-style:normal}
+.form input,.form select{height:44px;margin:0 0 12px;font-size:15px;box-shadow:2px 2px 0 var(--ink)}
+.form input:focus,.form select:focus{box-shadow:4px 4px 0 var(--blue)}
+.form .top2{margin:0}
+.form .top2 .pv.big{width:76px;height:76px;margin-top:2px}
+.form .row2{gap:0 10px}
+.form .link{margin:0 0 10px;padding:8px 10px;font-size:11px}
+.form .link span{color:var(--ink)}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tools button.cpy{height:42px;margin:0;font-size:11px;letter-spacing:.05em;padding:0 6px}
+.tools button.cpy.wide{grid-column:1/-1}
+.form .acts{margin:0 0 4px}
+.savebar{position:sticky;bottom:0;z-index:2;margin:14px -16px -16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:3px solid var(--ink);border-radius:0 0 15px 15px;background:#fff}
+.savebar .save{margin:0}
+
+/* ===== login & tata letak rapi ===== */
+body:has(#login:not([hidden])){display:flex;align-items:center}
+body:has(#login:not([hidden])) main{width:100%}
+body:has(#login:not([hidden])) .top{display:none}
+body:has(#login:not([hidden])) #msg{margin-bottom:16px}
+.top{padding:0 2px}
+.top h1{font-size:24px}
+#login.card{margin:0;padding:34px 22px 22px;border-radius:22px}
+.brand{display:grid;place-items:center;width:64px;height:64px;margin:0 0 18px;border:3px solid var(--ink);border-radius:18px;background:var(--blue);box-shadow:4px 4px 0 var(--ink);transform:rotate(-4deg)}
+.brand svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.lt{margin:0 0 4px;font:400 26px/1.1 var(--head);text-transform:uppercase;text-shadow:3px 3px 0 var(--tint)}
+.ls{margin:0 0 24px;color:var(--muted);font-size:14px}
+.fld2{margin:0 0 16px}
+.fld2 label{margin:0 0 7px;font-size:12px;letter-spacing:.06em}
+.inp{position:relative}
+.inp>svg{position:absolute;left:13px;top:50%;width:18px;height:18px;margin-top:-9px;stroke:var(--muted);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.inp input{margin:0;padding-left:42px}
+.inp input.pwi{padding-right:50px}
+.inp:focus-within>svg{stroke:var(--blue)}
+button.eye{position:absolute;right:6px;top:50%;width:38px;height:36px;margin-top:-18px;padding:0;border:0;border-radius:8px;background:transparent;box-shadow:none;color:var(--muted)}
+button.eye:hover{background:var(--tint);color:var(--ink)}
+button.eye:active{transform:none;box-shadow:none}
+button.eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#loginBtn{margin-top:8px;height:54px;font-size:15px}
+#loginBtn:disabled{opacity:.7;cursor:progress;background:var(--ink)}
+.lf{margin:18px 0 0;text-align:center;color:var(--muted);font-size:12px}
+.actbar{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;margin:0 0 22px}
+.actbar button,.actbar #addBtn{margin:0;height:52px}
+.tokc{margin:0 0 18px!important}
+.tokc .hint{margin:-4px 0 12px;color:var(--muted);font-size:12.5px}
+.tokc .alt{margin-top:0}
+#out{margin-top:0;background:#fff;color:var(--ink)}
+#out:hover{background:var(--ink);color:#fff}
+.total{margin-bottom:18px}
+
+/* ===== layar awal (daftar aplikasi) ===== */
+.total{display:flex;align-items:center;gap:14px;padding:14px 14px 14px 16px;border-radius:18px;background:var(--yellow);text-transform:none}
+.tinfo{flex:1;min-width:0}
+.tinfo small{display:block;margin:0 0 6px;font:700 12px/1 var(--body);letter-spacing:.04em;color:var(--ink);opacity:.7}
+.tinfo b{display:block;font:400 38px/1 var(--head);font-variant-numeric:tabular-nums}
+.tapp{margin:6px 0 0;font:700 12px/1 var(--body);opacity:.7}
+.total button{height:42px;padding:0 16px;font-size:12px;background:var(--ink);color:#fff;box-shadow:3px 3px 0 var(--blue)}
+.total button:hover{background:var(--blue)}
+.lh{display:flex;align-items:center;gap:10px;margin:0 0 14px;font:400 15px/1 var(--head);text-transform:uppercase}
+.lh::after{content:"";flex:1;height:3px;border-radius:2px;background:var(--ink);opacity:.15}
+#list{margin:0 0 6px}
+#list>.card{margin:0 0 14px;padding:14px;border-radius:16px;box-shadow:5px 5px 0 var(--ink);animation:none}
+#list>.card::before{display:none}
+#list>.card.drag{box-shadow:8px 8px 0 var(--blue)}
+#list .row{gap:12px}
+#list .row .pv{width:60px;height:60px;border-radius:12px}
+#list .nm{margin:0 0 8px;font-size:15px}
+#list .inf{display:flex;flex-wrap:wrap;align-items:center;gap:6px 6px}
+#list .inf .nm{flex:0 0 100%}
+#list .cnt{margin:0;background:#fff}
+#list .rgt{flex:0 0 100%;margin:2px 0 0;font-weight:500}
+#list .rgt:empty{display:none}
+#list .mv{flex-direction:column;gap:4px}
+#list button.mvb{width:32px;height:26px;box-shadow:2px 2px 0 var(--ink)}
+#list button.edit{height:60px;width:58px;padding:0;border-radius:12px;font-size:12px}
+.st::before{content:"";display:inline-block;width:6px;height:6px;margin:0 5px 1px 0;border-radius:50%;background:var(--ink)}
+.card.off .st::before{background:#fff}
+@media(max-width:360px){#list .mv{display:none}#list button.edit{width:50px}}
+
+/* ===== performa: scroll lebih ringan ===== */
+.deco{animation:none!important;contain:strict;will-change:auto}
+html{-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
+#list>.card{content-visibility:auto;contain-intrinsic-size:auto 90px;contain:layout paint style}
+#list>.card.drag{content-visibility:visible;contain:none}
+.card,.sheet,.total,input,select,button{will-change:auto}
+#list .row,.mv{touch-action:pan-y}
+@media (max-width:600px){
+  .deco{display:none}
+  #list>.card,.total,.card{box-shadow:4px 4px 0 var(--ink)}
+  input,select{box-shadow:2px 2px 0 var(--ink)}
+}
+
+/* ===== tampilan edit aplikasi (rapi) ===== */
+.sheet{max-width:480px;border-radius:20px}
+.mh{padding:12px 14px 12px 16px;background:var(--yellow)}
+.mh b{font-size:15px}
+button.x{width:38px;height:38px;border-radius:10px;background:#fff;color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+button.x:hover{background:var(--ink);color:#fff}
+#mmsg{position:sticky;top:76px;z-index:3;margin:0 0 14px;box-shadow:3px 3px 0 var(--ink);border-radius:12px}
+.grp{margin:0 0 16px;padding:14px;border-radius:16px;background:#fff;border-width:3px}
+.gh{position:static;display:block;margin:0 0 14px;padding:0 0 10px;border:0;border-bottom:2px solid rgba(11,11,15,.12);border-radius:0;background:none;box-shadow:none;text-transform:none;letter-spacing:0}
+.gh b{display:block;font:400 14px/1.1 var(--head);text-transform:uppercase}
+.gh small{display:block;margin-top:5px;font:500 12.5px/1.35 var(--body);color:var(--muted)}
+.form label{margin:0 0 6px;font:700 12.5px/1.1 var(--body);letter-spacing:0;text-transform:none;color:var(--ink)}
+.form input,.form select{height:46px;margin:0 0 14px;border-radius:12px;font-size:15px;box-shadow:2px 2px 0 var(--ink)}
+.form select{appearance:none;-webkit-appearance:none;padding-right:38px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230b0b0f' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 13px center}
+.form select:focus{background-color:var(--tint)}
+.form .grp>:last-child,.form .grp>div>:last-child{margin-bottom:0}
+.form .top2{gap:14px;align-items:flex-start}
+.form .top2 .pv.big{width:84px;height:84px;margin-top:20px}
+.form .top2 .fld>input{margin-bottom:14px}
+.form .top2 .fld>input:last-child{margin-bottom:0}
+.form .row2{gap:0 12px}
+.form .link{margin:0 0 12px;padding:10px 12px;border-radius:10px;font-weight:500;line-height:1.5}
+.form .link span{display:block;margin-top:2px;font-weight:700}
+.tools{gap:10px}
+.tools button.cpy,.form button.cpy{height:44px;border-radius:12px;font-size:12px;letter-spacing:.04em;box-shadow:3px 3px 0 var(--ink)}
+.tools button.cpy.wide{background:var(--blue);color:#fff}
+.tools button.cpy.wide:hover{background:var(--ink)}
+.form .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
+.form .acts .tog{grid-column:1/-1}
+.form .acts .tog,.form .acts .rst,.form .acts .del{height:46px;border-radius:12px}
+.form .acts .del{background:#fff;color:#d11a1a;border-color:#d11a1a;box-shadow:3px 3px 0 #d11a1a}
+.form .acts .del:hover{background:#d11a1a;color:#fff}
+.savebar{margin:6px -16px -16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 14px rgba(11,11,15,.08)}
+.sheet .save{height:54px;border-radius:14px}
+@media(max-width:380px){.form .top2{flex-direction:column}.form .top2 .pv.big{margin-top:0}.form .top2 .fld{width:100%}}
+
+/* header & tombol simpan ikut scroll (tidak menempel) */
+.mh{position:static}
+.savebar{position:static;margin:6px 0 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+#mmsg{top:8px}
 </style></head>
 <body>
 <div class="deco d1" aria-hidden="true"></div><div class="deco d2" aria-hidden="true"></div>
@@ -103,25 +249,45 @@ body.lock{overflow:hidden}
 <div id="msg" role="status"></div>
 
 <section id="login" class="card">
-  <div class="ttl">Login admin</div>
-  <label for="em">Email</label>
-  <input id="em" type="email" placeholder="admin@email.com" autocomplete="username">
-  <label for="pw">Password</label>
-  <input id="pw" type="password" placeholder="••••••••" autocomplete="current-password">
-  <button id="loginBtn" type="button">Masuk</button>
+  <div class="brand" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3m-4 4 3 3m-5-1 2 2"/></svg></div>
+  <h2 class="lt">Admin Key</h2>
+  <p class="ls">Masuk untuk mengelola aplikasi dan key.</p>
+  <form id="loginForm" novalidate>
+    <div class="fld2">
+      <label for="em">Email</label>
+      <div class="inp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <input id="em" type="email" placeholder="admin@email.com" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false">
+      </div>
+    </div>
+    <div class="fld2">
+      <label for="pw">Password</label>
+      <div class="inp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <input id="pw" class="pwi" type="password" placeholder="Masukkan password" autocomplete="current-password">
+        <button type="button" class="eye" id="eye" aria-label="Tampilkan password"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+    </div>
+    <button id="loginBtn" type="submit">Masuk</button>
+  </form>
+  <p class="lf">Halaman khusus admin</p>
 </section>
 
 <section id="panel" hidden>
-  <div class="total"><span id="totalTxt">Total Keys: 0</span><button type="button" id="refBtn">Refresh</button></div>
-  <div class="card" style="margin-bottom:14px">
+  <div class="total"><div class="tinfo"><small>Total keys diambil</small><b id="totalTxt">0</b><p class="tapp" id="appTxt">0 aplikasi</p></div><button type="button" id="refBtn">Refresh</button></div>
+  <h2 class="lh">Daftar aplikasi</h2>
+  <div id="list"></div>
+  <div class="actbar">
+    <button class="alt" id="addBtn" type="button">+ Aplikasi</button>
+    <button id="saveAll" type="button">Simpan semua</button>
+  </div>
+  <div class="card tokc">
     <div class="ttl">Token API VPLink</div>
+    <p class="hint">Disimpan hanya di browser ini.</p>
     <input id="vpTok" type="password" placeholder="Tempel token API VPLink" autocomplete="off" spellcheck="false">
     <button type="button" id="vpTokSave" class="alt">Simpan token (di browser ini)</button>
   </div>
-  <div id="list"></div>
-  <button class="alt" id="addBtn" type="button">+ Tambah aplikasi</button>
-  <button id="saveAll" type="button">Simpan semua</button>
-  <button class="alt" id="out" type="button">Keluar</button>
+  <button id="out" type="button">Keluar</button>
 </section>
 </main>
 
@@ -139,13 +305,13 @@ body.lock{overflow:hidden}
     ? 'Halaman dibuka dari file lokal (file://). Upload ke hosting dan buka lewat https://.'
     : 'Script Firebase gagal dimuat. Cek koneksi internet / VPN / pemblokir iklan (gstatic.com tidak boleh diblokir), lalu refresh paksa.';
   function show(){ var m=document.getElementById('msg'); m.className='bad'; m.textContent=msg; }
-  document.getElementById('loginBtn').addEventListener('click', function(){ if(!window.__adminOk) show(); });
+  document.getElementById('loginForm').addEventListener('submit', function(){ if(!window.__adminOk) show(); });
   setTimeout(function(){ if(!window.__adminOk) show(); }, 3000);
 })();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDocs, collection, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDxlcMvfZ1nhJ8WYbjR_y50N7EaY71gRIY",
@@ -165,6 +331,8 @@ const DEFAULT_APPS = [
   { name: '8 BALL POOL V10', logo: 'https://i.ibb.co.com/674DCgnZ/product.jpg', install: 'https://www.mediafire.com/file/81gji9qdaqofycn/8+Ball+Poll+V10.apk/file', link: 'https://vplink.in/bhjcxxz' }
 ];
 let ids = [];
+const lastRg = {}, failAt = {}, ordDb = {}, savedIds = new Set();
+let arBusy = false, arT = null;
 // Token acak per aplikasi: dipakai di link key.html?k=TOKEN (tidak bisa ditebak). ID aplikasi (1,2,3..) tetap untuk urutan & hitungan.
 let tokens = {};
 const newToken = () => {
@@ -200,7 +368,7 @@ function setPv(id) {
     const empty = (t) => { pv.innerHTML = '<small>' + t + '</small>'; };
     if (!url) { empty('Tanpa logo'); continue; }
     const img = new Image();
-    img.referrerPolicy = 'no-referrer';
+    img.referrerPolicy = 'no-referrer'; img.loading = 'lazy'; img.decoding = 'async';
     img.alt = '';
     img.onerror = () => empty('Gambar gagal dimuat');
     img.src = url;
@@ -213,7 +381,7 @@ function openEdit(id) {
   const f = $('form' + id);
   $('mbody').appendChild(f);
   f.hidden = false;
-  $('mt').textContent = 'Edit aplikasi ' + id;
+  $('mt').textContent = 'Edit: ' + ($('a' + id).value.trim() || ('Aplikasi ' + id));
   say('');
   $('modal').hidden = false;
   $('modal').scrollTop = 0;
@@ -247,6 +415,48 @@ async function makeShort(url) {
   return out;
 }
 function showLink(id) { const el = $('lk' + id); if (el) el.textContent = keyLink(id); }
+const fmt = (t) => new Date(t).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+function showAuto(id) {
+  const el = $('ai' + id), iv = Number($('ar' + id).value) || 0;
+  const rc = $('rg' + id);
+  if (rc) rc.textContent = iv && lastRg[id] ? 'Acak berikutnya: ' + fmt(lastRg[id] + iv) : '';
+  if (!el) return;
+  el.hidden = !iv;
+  if (!iv) { el.textContent = ''; return; }
+  const last = lastRg[id] || Date.now();
+  el.textContent = 'Berikutnya: ' + fmt(last + iv) + (getVpTok() ? '. Jalan selama halaman ini terbuka.' : '. Simpan Token API VPLink dulu, kalau tidak otomatis tidak jalan.');
+}
+async function regenLink(id) {
+  const old = tokens[id], tk = newToken(), oldVp = $('vp' + id).value, oldRg = lastRg[id];
+  try {
+    if (getVpTok()) $('vp' + id).value = await makeShort(keyLinkT(tk));
+    lastRg[id] = Date.now();
+    await saveOne(id, tk);
+    if (old && old !== tk) await deleteDoc(doc(db, 'vpkeys', old));
+  } catch (err) { $('vp' + id).value = oldVp; lastRg[id] = oldRg; throw err; }
+  tokens[id] = tk; showLink(id); showAuto(id);
+}
+async function autoCheck() {
+  if (arBusy || !auth.currentUser || !ids.length) return;
+  arBusy = true;
+  try {
+    for (const id of [...ids]) {
+      if (!$('ar' + id)) continue;
+      showAuto(id);
+      const iv = Number($('ar' + id).value) || 0;
+      if (!iv || !savedIds.has(id) || !getVpTok()) continue;
+      if (Date.now() - (lastRg[id] || 0) < iv) continue;
+      if (Date.now() - (failAt[id] || 0) < 300000) continue; // gagal: coba lagi 5 menit kemudian
+      try { // cegah dobel kalau panel dibuka di 2 tab/perangkat
+        const s = await getDoc(doc(db, 'apps', id)), l = s.exists() ? Number(s.data().lastRegen) || 0 : 0;
+        if (l && Date.now() - l < iv) { lastRg[id] = l; continue; }
+      } catch (e) {}
+      const nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
+      try { await regenLink(id); say('Link "' + nm + '" diacak otomatis. Link VPLink baru: ' + $('vp' + id).value); }
+      catch (err) { failAt[id] = Date.now(); say('Acak otomatis "' + nm + '" gagal: ' + (err.message || err), true); console.error(err); }
+    }
+  } finally { arBusy = false; }
+}
 
 function addCard(id, d = {}) {
   if (!tokens[id]) tokens[id] = newToken();
@@ -254,59 +464,79 @@ function addCard(id, d = {}) {
   <div class="card" id="card${id}">
     <div class="row">
       <div class="pv" id="pv${id}"></div>
-      <div class="inf"><span class="nm" id="nm${id}"></span><span class="st" id="st${id}">Aktif</span><span class="cnt" id="ct${id}">Keys: 0</span></div>
+      <div class="inf"><span class="nm" id="nm${id}"></span><span class="st" id="st${id}">Aktif</span><span class="cnt" id="ct${id}">Keys: 0</span><span class="rgt" id="rg${id}"></span></div>
+      <div class="mv"><button type="button" class="mvb" data-mv="${id}" data-dir="-1" aria-label="Naik">▲</button><button type="button" class="mvb" data-mv="${id}" data-dir="1" aria-label="Turun">▼</button></div>
       <button type="button" class="edit" data-edit="${id}">Edit</button>
     </div>
 
     <div class="form" id="form${id}" hidden>
-      <div class="top2">
-        <div class="pv big" id="pm${id}"></div>
-        <div class="fld">
-          <label for="a${id}">Nama aplikasi</label>
-          <input id="a${id}" placeholder="mis. TARZ PROXY V1" autocomplete="off">
-          <label for="lg${id}">Link logo (gambar)</label>
-          <input id="lg${id}" type="url" placeholder="https://i.ibb.co.com/..." autocomplete="off" spellcheck="false" style="margin:0">
+      <div class="grp">
+        <div class="gh"><b>Info aplikasi</b><small>Nama dan logo yang tampil di Index.</small></div>
+        <div class="top2">
+          <div class="pv big" id="pm${id}"></div>
+          <div class="fld">
+            <label for="a${id}">Nama aplikasi</label>
+            <input id="a${id}" placeholder="mis. TARZ PROXY V1" autocomplete="off">
+            <label for="lg${id}">Link logo (gambar)</label>
+            <input id="lg${id}" type="url" placeholder="https://i.ibb.co.com/..." autocomplete="off" spellcheck="false" style="margin:0">
+          </div>
         </div>
       </div>
 
-      <div class="sec">Akses</div>
-      <div class="row2">
-        <div>
-          <label for="m${id}">Tipe</label>
-          <select id="m${id}"><option value="key">Key</option><option value="userpass">Username &amp; Password</option></select>
-        </div>
-        <div>
-          <label for="u${id}">Berlaku sampai</label>
-          <input id="u${id}" placeholder="opsional" autocomplete="off">
-        </div>
-      </div>
-      <div id="kb${id}">
-        <label for="k${id}">Key</label>
-        <input id="k${id}" placeholder="Ketik key di sini" autocomplete="off" spellcheck="false">
-      </div>
-      <div id="ub${id}" hidden>
+      <div class="grp">
+        <div class="gh"><b>Akses</b><small>Key atau akun yang diberikan ke pengguna.</small></div>
         <div class="row2">
-          <div><label for="n${id}">Username</label><input id="n${id}" placeholder="Username" autocomplete="off" spellcheck="false"></div>
-          <div><label for="p${id}">Password</label><input id="p${id}" placeholder="Password" autocomplete="off" spellcheck="false"></div>
+          <div>
+            <label for="m${id}">Tipe</label>
+            <select id="m${id}"><option value="key">Key</option><option value="userpass">Username &amp; Password</option></select>
+          </div>
+          <div>
+            <label for="u${id}">Berlaku sampai</label>
+            <input id="u${id}" placeholder="opsional" autocomplete="off">
+          </div>
+        </div>
+        <div id="kb${id}">
+          <label for="k${id}">Key</label>
+          <input id="k${id}" placeholder="Ketik key di sini" autocomplete="off" spellcheck="false" style="margin:0">
+        </div>
+        <div id="ub${id}" hidden>
+          <div class="row2">
+            <div><label for="n${id}">Username</label><input id="n${id}" placeholder="Username" autocomplete="off" spellcheck="false" style="margin:0"></div>
+            <div><label for="p${id}">Password</label><input id="p${id}" placeholder="Password" autocomplete="off" spellcheck="false" style="margin:0"></div>
+          </div>
         </div>
       </div>
 
-      <div class="sec">Link</div>
-      <label for="mf${id}">MediaFire (tombol Install)</label>
-      <input id="mf${id}" type="url" placeholder="https://www.mediafire.com/file/..." autocomplete="off" spellcheck="false">
-      <label for="vp${id}">VPLink (tombol Get Key)</label>
-      <input id="vp${id}" type="url" placeholder="https://vplink.in/xxxx" autocomplete="off" spellcheck="false">
-      <p class="link">Tujuan link VPLink (isi saat bikin link di vplink.in):<br><span id="lk${id}"></span></p>
-      <button type="button" class="cpy" data-copylink="${id}">Salin link</button>
-      <button type="button" class="cpy" data-regen="${id}">Acak ulang link</button>
-      <button type="button" class="cpy" data-mkshort="${id}">Buat link VPLink otomatis</button>
-
-      <button type="button" class="save" data-save="${id}">Simpan aplikasi ini</button>
-      <div class="acts">
-        <button type="button" class="tog" id="tg${id}" data-tog="${id}">Nonaktifkan</button>
-        <button type="button" class="rst" data-reset="${id}">Reset</button>
-        <button type="button" class="del" data-del="${id}">Hapus</button>
+      <div class="grp">
+        <div class="gh"><b>Link</b><small>Tujuan unduhan dan link key.</small></div>
+        <label for="mf${id}">MediaFire</label>
+        <input id="mf${id}" type="url" placeholder="https://www.mediafire.com/file/..." autocomplete="off" spellcheck="false">
+        <label for="vp${id}">VPLink</label>
+        <input id="vp${id}" type="url" placeholder="https://vplink.in/xxxx" autocomplete="off" spellcheck="false">
+        <p class="link">Tujuan link VPLink:<br><span id="lk${id}"></span></p>
+        <div class="tools">
+          <button type="button" class="cpy" data-copylink="${id}">Salin link</button>
+          <button type="button" class="cpy" data-regen="${id}">Acak ulang link</button>
+          <button type="button" class="cpy wide" data-mkshort="${id}">Buat link VPLink otomatis</button>
+        </div>
       </div>
+
+      <div class="grp">
+        <div class="gh"><b>Acak ulang otomatis</b><small>Link key diganti sendiri sesuai jadwal.</small></div>
+        <select id="ar${id}" style="margin-bottom:0"><option value="0">Mati</option><option value="3600000">Tiap 1 jam</option><option value="36000000">Tiap 10 jam</option><option value="86400000">Tiap 24 jam</option><option value="259200000">Tiap 3 hari</option></select>
+        <p class="link" id="ai${id}" style="margin:10px 0 0"></p>
+      </div>
+
+      <div class="grp">
+        <div class="gh"><b>Status &amp; data</b><small>Tampil di Index, hitungan key, atau hapus aplikasi.</small></div>
+        <div class="acts">
+          <button type="button" class="tog" id="tg${id}" data-tog="${id}">Nonaktifkan</button>
+          <button type="button" class="rst" data-reset="${id}">Reset hitungan</button>
+          <button type="button" class="del" data-del="${id}">Hapus</button>
+        </div>
+      </div>
+
+      <div class="savebar"><button type="button" class="save" data-save="${id}">Simpan aplikasi ini</button></div>
     </div>
   </div>`);
   $('a' + id).value = d.name || '';
@@ -318,14 +548,19 @@ function addCard(id, d = {}) {
   $('lg' + id).value = d.logo || '';
   $('mf' + id).value = d.install || '';
   $('vp' + id).value = d.link || '';
+  $('ar' + id).value = String(d.autoRegen || 0);
+  if ($('ar' + id).value === '') $('ar' + id).value = '0';
+  lastRg[id] = Number(d.lastRegen) || (d.autoRegen ? Date.now() : 0);
   $('nm' + id).textContent = d.name || ('Aplikasi ' + id);
   setActive(id, d.active !== false);
   $('m' + id).onchange = () => sync(id);
+  $('ar' + id).onchange = () => { lastRg[id] = Date.now(); delete failAt[id]; showAuto(id); say('Jadwal diubah. Klik "Simpan aplikasi ini" supaya tersimpan.'); };
   $('a' + id).addEventListener('input', () => { $('nm' + id).textContent = $('a' + id).value.trim() || ('Aplikasi ' + id); });
   $('lg' + id).addEventListener('input', () => { clearTimeout(pvT[id]); pvT[id] = setTimeout(() => setPv(id), 400); });
   setPv(id);
   sync(id);
   showLink(id);
+  showAuto(id);
   ids.push(id);
 }
 
@@ -334,7 +569,7 @@ let counts = {};
 function showCounts() {
   let sum = 0;
   for (const id of ids) { const n = cap(counts[id]); sum += n; const el = $('ct' + id); if (el) el.textContent = 'Keys: ' + n; }
-  $('totalTxt').textContent = 'Total Keys: ' + sum;
+  $('totalTxt').textContent = sum; $('appTxt').textContent = ids.length + ' aplikasi';
 }
 async function loadCounts() {
   counts = {};
@@ -366,12 +601,13 @@ async function load() {
     say('Link diubah jadi acak. Salin link baru tiap aplikasi lalu ganti tujuan di vplink.in.');
   }
   rows.forEach((r) => { tokens[r.id] = r._doc; });
-  rows.sort((a, b) => a.id - b.id);
-  $('list').innerHTML = ''; ids = [];
+  rows.sort((a, b) => ((extra[a.id] && extra[a.id].order) ?? Number(a.id)) - ((extra[b.id] && extra[b.id].order) ?? Number(b.id)) || a.id - b.id);
+  $('list').innerHTML = ''; ids = []; savedIds.clear();
   if (rows.length) rows.forEach((r) => {
     const df = DEFAULT_APPS[Number(r.id) - 1] || {};
     const e = extra[r.id] || {};
-    addCard(r.id, { ...r, logo: e.logo || df.logo, install: e.install || df.install, link: e.link || df.link, active: e.active });
+    addCard(r.id, { ...r, logo: e.logo || df.logo, install: e.install || df.install, link: e.link || df.link, active: e.active, autoRegen: e.autoRegen, lastRegen: e.lastRegen });
+    savedIds.add(r.id); ordDb[r.id] = e.order;
   });
   else DEFAULT_APPS.forEach((d, i) => addCard(String(i + 1), d));
   await loadCounts();
@@ -387,6 +623,7 @@ $('addBtn').onclick = () => {
 };
 
 async function saveOne(id, tk = tokens[id]) {
+  const isNew = !savedIds.has(id);
   const name = $('a' + id).value.trim() || ('Aplikasi ' + id);
   await setDoc(doc(db, 'vpkeys', tk), {
     app: id,
@@ -404,14 +641,74 @@ async function saveOne(id, tk = tokens[id]) {
     logo: $('lg' + id).value.trim(),
     install: $('mf' + id).value.trim(),
     link: $('vp' + id).value.trim(),
-    order: Number(id),
+    order: ids.indexOf(id) + 1,
     active: isOn(id),
+    autoRegen: Number($('ar' + id).value) || 0,
+    lastRegen: lastRg[id] || 0,
     updated: serverTimestamp()
   });
   $('nm' + id).textContent = name;
+  savedIds.add(id);
+  ordDb[id] = ids.indexOf(id) + 1;
+  if (isNew) { try { await saveOrder(true); } catch (e) { console.error(e); } }
 }
 
+async function saveOrder(quiet) {
+  ids = [...$('list').children].map((c) => c.id.slice(4));
+  try {
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      if (!savedIds.has(id) || ordDb[id] === i + 1) continue;
+      await setDoc(doc(db, 'apps', id), { order: i + 1, updated: serverTimestamp() }, { merge: true });
+      ordDb[id] = i + 1;
+    }
+    if (!quiet) say('Urutan tersimpan. Index ikut berubah.');
+  } catch (err) { if (!quiet) say('Gagal menyimpan urutan (cek login / rules Firebase).', true); console.error(err); throw err; }
+}
+
+// tahan lama kartu lalu geser untuk pindah urutan
+(function () {
+  const L = $('list');
+  let dragEl = null, lpT = null, sx = 0, sy = 0;
+  L.addEventListener('pointerdown', (e) => {
+    if (e.button > 0 || e.target.closest('button')) return;
+    const row = e.target.closest('.row'), card = row && row.closest('.card');
+    if (!card || card.parentElement !== L) return;
+    sx = e.clientX; sy = e.clientY;
+    clearTimeout(lpT);
+    document.addEventListener('touchmove', blockTouch, { passive: false });
+    lpT = setTimeout(() => { dragEl = card; card.classList.add('drag'); try { navigator.vibrate && navigator.vibrate(30); } catch (_) {} }, 450);
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!dragEl) { if (lpT && Math.hypot(e.clientX - sx, e.clientY - sy) > 10) { clearTimeout(lpT); lpT = null; unblock(); } return; }
+    const y = e.clientY, prev = dragEl.previousElementSibling, next = dragEl.nextElementSibling;
+    if (prev) { const r = prev.getBoundingClientRect(); if (y < r.top + r.height / 2) L.insertBefore(dragEl, prev); }
+    if (next) { const r = next.getBoundingClientRect(); if (y > r.top + r.height / 2) L.insertBefore(next, dragEl); }
+    if (y < 90) scrollBy(0, -14); else if (y > innerHeight - 90) scrollBy(0, 14);
+  });
+  const blockTouch = (e) => { if (dragEl) e.preventDefault(); };
+  const unblock = () => document.removeEventListener('touchmove', blockTouch);
+  const end = async () => {
+    clearTimeout(lpT); lpT = null; unblock();
+    if (!dragEl) return;
+    const c = dragEl; dragEl = null; c.classList.remove('drag');
+    try { await saveOrder(); } catch (e) {}
+  };
+  document.addEventListener('pointerup', end);
+  document.addEventListener('pointercancel', end);
+  L.addEventListener('contextmenu', (e) => { if (e.target.closest('.row')) e.preventDefault(); });
+})();
+
 async function onAction(e) {
+  const mv = e.target.closest('[data-mv]');
+  if (mv) {
+    const c = $('card' + mv.dataset.mv), up = Number(mv.dataset.dir) < 0, sib = up ? c.previousElementSibling : c.nextElementSibling;
+    if (!sib) return;
+    if (up) $('list').insertBefore(c, sib); else $('list').insertBefore(sib, c);
+    c.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    try { await saveOrder(); } catch (err) {}
+    return;
+  }
   const ed = e.target.closest('[data-edit]');
   if (ed) { openEdit(ed.dataset.edit); return; }
 
@@ -443,13 +740,8 @@ async function onAction(e) {
   if (rg) {
     const id = rg.dataset.regen, auto = !!getVpTok();
     if (!confirm('Acak ulang link aplikasi ini? Link lama langsung berhenti bekerja.' + (auto ? ' Link VPLink baru dibuat otomatis.' : ' Tujuan di vplink.in harus diganti manual.'))) return;
-    const old = tokens[id], tk = newToken();
-    try {
-      if (auto) $('vp' + id).value = await makeShort(keyLinkT(tk));
-      await saveOne(id, tk);
-      if (old && old !== tk) await deleteDoc(doc(db, 'vpkeys', old));
-    } catch (err) { say('Gagal mengacak link, tidak ada yang diubah: ' + (err.message || err) + (auto ? ' (kalau terblokir CORS, pakai Cloud Function)' : ''), true); console.error(err); return; }
-    tokens[id] = tk; showLink(id);
+    try { await regenLink(id); }
+    catch (err) { say('Gagal mengacak link, tidak ada yang diubah: ' + (err.message || err) + (auto ? ' (kalau terblokir CORS, pakai Cloud Function)' : ''), true); console.error(err); return; }
     say(auto ? 'Link baru dibuat dan sudah tersimpan: ' + $('vp' + id).value : 'Link baru dibuat. Salin lalu ganti tujuan di vplink.in.');
     return;
   }
@@ -495,13 +787,13 @@ async function onAction(e) {
   closeEdit();
   $('card' + id).remove();
   ids = ids.filter((x) => x !== id);
-  delete counts[id]; delete tokens[id]; showCounts();
+  delete counts[id]; delete tokens[id]; delete lastRg[id]; delete failAt[id]; savedIds.delete(id); delete ordDb[id]; showCounts();
   say('"' + nm + '" dihapus.');
 }
 $('vpTok').value = getVpTok();
 $('vpTokSave').onclick = () => {
   const v = $('vpTok').value.trim();
-  try { if (v) localStorage.setItem(VPK, v); else localStorage.removeItem(VPK); say(v ? 'Token VPLink disimpan di browser ini.' : 'Token VPLink dihapus.'); }
+  try { if (v) localStorage.setItem(VPK, v); else localStorage.removeItem(VPK); ids.forEach(showAuto); say(v ? 'Token VPLink disimpan di browser ini.' : 'Token VPLink dihapus.'); }
   catch (e) { say('Browser menolak menyimpan token.', true); }
 };
 $('refBtn').onclick = loadCounts;
@@ -509,9 +801,19 @@ $('list').onclick = onAction;
 $('mbody').onclick = onAction;
 $('mclose').onclick = closeEdit;
 $('modal').onclick = (e) => { if (e.target === $('modal')) closeEdit(); };
+document.addEventListener('visibilitychange', () => { if (!document.hidden) autoCheck(); });
 addEventListener('keydown', (e) => { if (e.key === 'Escape') closeEdit(); });
 
-$('loginBtn').onclick = async () => {
+$('eye').onclick = () => {
+  const show = $('pw').type === 'password';
+  $('pw').type = show ? 'text' : 'password';
+  $('eye').setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
+};
+$('loginForm').onsubmit = async (ev) => {
+  ev.preventDefault();
+  const b = $('loginBtn');
+  if (!$('em').value.trim() || !$('pw').value) { say('Isi email dan password dulu.', true); return; }
+  b.disabled = true; b.textContent = 'Memeriksa...';
   try { await signInWithEmailAndPassword(auth, $('em').value.trim(), $('pw').value); say(''); }
   catch (e) {
     const m = {
@@ -526,6 +828,7 @@ $('loginBtn').onclick = async () => {
     say('Login gagal [' + (e.code || e.message) + ']: ' + (m[e.code] || 'lihat kode di dalam kurung.'), true);
     console.error(e);
   }
+  b.disabled = false; b.textContent = 'Masuk';
 };
 $('out').onclick = () => { closeEdit(); signOut(auth); };
 
@@ -538,7 +841,8 @@ $('saveAll').onclick = async () => {
 
 onAuthStateChanged(auth, async (u) => {
   $('login').hidden = !!u; $('panel').hidden = !u;
-  if (u) { try { await load(); } catch (e) { say('Gagal memuat data.', true); } }
+  clearInterval(arT);
+  if (u) { try { await load(); } catch (e) { say('Gagal memuat data.', true); } arT = setInterval(autoCheck, 30000); autoCheck(); }
 });
 </script>
 </body></html>
