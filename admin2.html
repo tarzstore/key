@@ -867,7 +867,7 @@ async function showDevices() {
     if (!h) { el.textContent = '0'; return; }
     try {
       const sn = await get(ref(ldb, LIC_DEV + '/' + h));
-      el.textContent = Math.max(0, Math.min(100, sn.exists() ? sn.numChildren() : 0));
+      el.textContent = Math.max(0, Math.min(100, sn.exists() ? sn.size : 0));
     } catch (e) { el.textContent = '-'; }
   }));
 }
@@ -905,7 +905,7 @@ async function licInfo(id) {
     const [a, d] = await Promise.all([get(ref(ldb, LIC_PRIV + '/' + h)), get(ref(ldb, LIC_DEV + '/' + h))]);
     const r = a.val();
     if (!r) { el.textContent = 'Key tidak ditemukan di License (mungkin sudah dihapus). Klik Reset key untuk membuat ulang.'; return; }
-    const used = d.exists() ? d.numChildren() : 0, max = parseInt(r.max, 10) || 0;
+    const used = d.exists() ? d.size : 0, max = parseInt(r.max, 10) || 0;
     const left = !r.exp ? 'selamanya' : (r.exp > Date.now() ? 'sisa ' + humanLeft(r.exp - Date.now()) : 'kedaluwarsa');
     el.textContent = r.code + ' | device ' + used + ' / ' + (max || '∞') + ' | ' + left;
   } catch (err) { el.textContent = 'Gagal membaca status: ' + licErr(err); }
