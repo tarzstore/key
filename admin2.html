@@ -186,12 +186,23 @@ button.eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width
 #list button.edit{height:60px;width:58px;padding:0;border-radius:12px;font-size:12px}
 .st::before{content:"";display:inline-block;width:6px;height:6px;margin:0 5px 1px 0;border-radius:50%;background:var(--ink)}
 .card.off .st::before{background:#fff}
+.aid{display:inline-block;max-width:100%;padding:4px 8px 3px;border:2px solid var(--ink);border-radius:6px;background:#fff;font:700 10px/1 var(--body);letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:360px){#list .mv{display:none}#list button.edit{width:50px}}
+#list .sts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+#list .sb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;border:2px solid var(--ink);border-radius:12px}
+#list .sb.k{background:var(--tint)}
+#list .sb.d{background:#fff3c4}
+#list .sb small{font:700 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);opacity:.7}
+#list .sb b{font:400 20px/1 var(--head);font-variant-numeric:tabular-nums}
+#list .eb{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+#list .eb button.edit{width:100%;height:44px;padding:0;border-radius:12px;font-size:13px}
+#list .eb button.edit.keyb{background:var(--blue);color:#fff}
+#list .eb button.edit.keyb:hover{background:var(--ink)}
 
 /* ===== performa: scroll lebih ringan ===== */
 .deco{animation:none!important;contain:strict;will-change:auto}
 html{-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
-#list>.card{content-visibility:auto;contain-intrinsic-size:auto 90px;contain:layout paint style}
+#list>.card{content-visibility:auto;contain-intrinsic-size:auto 190px;contain:layout paint style}
 #list>.card.drag{content-visibility:visible;contain:none}
 .card,.sheet,.total,input,select,button{will-change:auto}
 #list .row,.mv{touch-action:pan-y}
@@ -237,6 +248,19 @@ button.x:hover{background:var(--ink);color:#fff}
 .sheet .save{height:54px;border-radius:14px}
 @media(max-width:380px){.form .top2{flex-direction:column}.form .top2 .pv.big{margin-top:0}.form .top2 .fld{width:100%}}
 
+/* ===== dialog konfirmasi ===== */
+#cfm{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:rgba(11,11,15,.6)}
+.cbox{width:100%;max-width:380px;padding:18px 16px 16px;border:3px solid var(--ink);border-radius:18px;background:#fff;box-shadow:7px 7px 0 var(--ink);animation:pop .25s cubic-bezier(.3,1.5,.5,1) both}
+.cbox b{display:block;margin:0 0 8px;font:400 17px/1.15 var(--head);text-transform:uppercase}
+.cbox p{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.45;white-space:pre-line;overflow-wrap:anywhere}
+.cbtn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cbtn button{height:48px;font-size:14px;border-radius:12px;box-shadow:3px 3px 0 var(--ink)}
+.cbtn .cno{background:#fff;color:var(--ink)}
+.cbtn .cno:hover{background:var(--ink);color:#fff}
+.cbtn .cyes{background:var(--blue);color:#fff}
+.cbtn .cyes.danger{background:var(--red)}
+.cbtn .cyes:hover{background:var(--ink)}
+
 /* header & tombol simpan ikut scroll (tidak menempel) */
 .mh{position:static}
 .savebar{position:static;margin:6px 0 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
@@ -281,6 +305,13 @@ button.x:hover{background:var(--ink);color:#fff}
     <button class="alt" id="addBtn" type="button">+ Aplikasi</button>
     <button id="saveAll" type="button">Simpan semua</button>
   </div>
+  <div class="card tokc" id="licCard">
+    <div class="ttl">Koneksi License</div>
+    <p class="hint" id="licSt">Memeriksa...</p>
+    <input id="licEm" type="email" placeholder="Email akun License" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <input id="licPw" type="password" placeholder="Password akun License" autocomplete="off">
+    <button type="button" id="licGo" class="alt">Sambungkan License</button>
+  </div>
   <div class="card tokc">
     <div class="ttl">Token API VPLink</div>
     <p class="hint">Disimpan hanya di browser ini.</p>
@@ -299,6 +330,14 @@ button.x:hover{background:var(--ink);color:#fff}
   </div>
 </div>
 
+<div id="cfm" hidden>
+  <div class="cbox" role="alertdialog" aria-modal="true" aria-labelledby="cft" aria-describedby="cfx">
+    <b id="cft">Konfirmasi</b>
+    <p id="cfx"></p>
+    <div class="cbtn"><button type="button" id="cfn" class="cno">Batal</button><button type="button" id="cfy" class="cyes">OK</button></div>
+  </div>
+</div>
+
 <script>
 (function(){
   var msg = location.protocol === 'file:'
@@ -313,6 +352,7 @@ button.x:hover{background:var(--ink);color:#fff}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc, getDocs, collection, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, get, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const firebaseConfig = {
   apiKey: "AIzaSyDxlcMvfZ1nhJ8WYbjR_y50N7EaY71gRIY",
   authDomain: "free-key-3024b.firebaseapp.com",
@@ -341,6 +381,70 @@ const newToken = () => {
   return [...a].map((n) => P[n % P.length]).join('');
 };
 const app = initializeApp(firebaseConfig), db = getFirestore(app), auth = getAuth(app);
+// Project License (sama dengan license.html). Key Free Key ditulis ke sini.
+const licConfig = {
+  apiKey: "AIzaSyAI9d8eTeVafEdQicjwcLaYRUA75xYDmQI",
+  authDomain: "tarzmodz-1dbab.firebaseapp.com",
+  databaseURL: "https://tarzmodz-1dbab-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "tarzmodz-1dbab",
+  storageBucket: "tarzmodz-1dbab.firebasestorage.app",
+  messagingSenderId: "886882124675",
+  appId: "1:886882124675:web:6255a2b03a30e21fb1ecb6"
+};
+const licFb = initializeApp(licConfig, 'license'), licAuth = getAuth(licFb), ldb = getDatabase(licFb);
+const LIC_PUB = 'licenses', LIC_PRIV = 'adminKeys', LIC_DEV = 'deviceRegs';
+const LIC_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const LIC_NOAUTH = 'Belum tersambung ke License. Tutup jendela ini, lalu sambungkan lewat kartu Koneksi License di halaman utama.';
+const normCode = (v) => String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+const sha256Hex = async (v) => {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
+};
+const makeCode = () => {
+  const a = new Uint32Array(5); crypto.getRandomValues(a);
+  let r = ''; for (const n of a) r += LIC_ALPHA[n % LIC_ALPHA.length];
+  return 'TARZ-' + r;
+};
+const licReady = () => !!licAuth.currentUser;
+let licLastErr = '';
+const licAuthErr = (e) => {
+  const c = (e && e.code) || '';
+  const m = {
+    'auth/invalid-credential': 'Email/password salah, atau akun ini belum dibuat di Authentication project License (tarzmodz-1dbab).',
+    'auth/user-not-found': 'Akun ini belum dibuat di Authentication project License (tarzmodz-1dbab).',
+    'auth/wrong-password': 'Password salah untuk project License.',
+    'auth/operation-not-allowed': 'Login Email/Password belum diaktifkan di project License (Authentication > Sign-in method).',
+    'auth/unauthorized-domain': 'Domain situs ini belum ditambahkan di Authentication > Settings > Authorized domains project License (tarzmodz-1dbab).',
+    'auth/network-request-failed': 'Gagal terhubung ke Firebase. Cek internet.',
+    'auth/too-many-requests': 'Terlalu banyak percobaan, tunggu beberapa menit.'
+  };
+  return (m[c] || 'Gagal masuk ke License.') + ' [' + (c || (e && e.message) || '?') + ']';
+};
+const licErr = (e) => /permission/i.test((e && (e.code || e.message)) || '')
+  ? 'Rules License menolak. Pastikan akun ini juga admin di project License.'
+  : ((e && e.message) || String(e));
+// Format sama dengan license.html: node publik "licenses" hanya berisi h, app, exp, off, max.
+function licPayload(records) {
+  const keys = Object.keys(records).map((h) => {
+    const r = records[h];
+    return { h, app: r.app || '', exp: r.exp || 0, off: !!r.off, max: Math.max(parseInt(r.max, 10) || 0, 0) };
+  });
+  return { version: 1, updatedAt: new Date().toISOString(), count: keys.length, keys };
+}
+// Baca data terbaru dulu supaya key lain (VIP/reseller) tidak tertimpa.
+async function licMutate(fn) {
+  if (!licReady()) throw new Error(LIC_NOAUTH);
+  const snap = await get(ref(ldb, LIC_PRIV));
+  const raw = snap.val();
+  const recs = raw && typeof raw === 'object' ? raw : {};
+  await fn(recs);
+  await update(ref(ldb), { [LIC_PUB]: licPayload(recs), [LIC_PRIV]: recs });
+}
+const licNum = (el, def) => { const v = $(el).value.trim(); return v === '' ? def : Math.max(0, parseInt(v, 10) || 0); };
+const humanLeft = (ms) => {
+  const m = Math.max(Math.floor(ms / 60000), 0), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60);
+  return (d ? d + 'h ' : '') + ((d || h) ? h + 'j ' : '') + (m % 60) + 'm';
+};
 const $ = (id) => document.getElementById(id);
 const say = (t, bad) => {
   for (const m of [$('msg'), $('mmsg')]) { m.className = ''; m.textContent = t; if (t) { void m.offsetWidth; m.className = bad ? 'bad' : 'ok'; } }
@@ -361,6 +465,13 @@ function setActive(id, on) {
   $('st' + id).textContent = on ? 'Aktif' : 'Nonaktif';
 }
 
+function showAid(id) {
+  const el = $('aid' + id); if (!el) return;
+  const v = $('ia' + id).value.trim();
+  el.hidden = !v;
+  el.textContent = v ? 'ID: ' + v : '';
+}
+
 function setPv(id) {
   const url = $('lg' + id).value.trim();
   for (const pv of [$('pv' + id), $('pm' + id)]) {
@@ -376,21 +487,24 @@ function setPv(id) {
   }
 }
 
-function openEdit(id) {
+let curKind = 'form';
+function openEdit(id, kind) {
   closeEdit();
-  const f = $('form' + id);
+  curKind = kind === 'keyform' ? 'keyform' : 'form';
+  const f = $(curKind + id);
   $('mbody').appendChild(f);
   f.hidden = false;
-  $('mt').textContent = 'Edit: ' + ($('a' + id).value.trim() || ('Aplikasi ' + id));
+  $('mt').textContent = (curKind === 'keyform' ? 'Key: ' : 'Edit: ') + ($('a' + id).value.trim() || ('Aplikasi ' + id));
   say('');
   $('modal').hidden = false;
   $('modal').scrollTop = 0;
   document.body.classList.add('lock');
   cur = id;
+  if (curKind === 'keyform') licInfo(id);
 }
 function closeEdit() {
   if (!cur) return;
-  const f = $('form' + cur), c = $('card' + cur);
+  const f = $(curKind + cur), c = $('card' + cur);
   if (f && c) { f.hidden = true; c.appendChild(f); }
   $('modal').hidden = true;
   document.body.classList.remove('lock');
@@ -432,9 +546,15 @@ async function regenLink(id) {
     if (getVpTok()) $('vp' + id).value = await makeShort(keyLinkT(tk));
     lastRg[id] = Date.now();
     await saveOne(id, tk);
-    if (old && old !== tk) await deleteDoc(doc(db, 'vpkeys', old));
-  } catch (err) { $('vp' + id).value = oldVp; lastRg[id] = oldRg; throw err; }
-  tokens[id] = tk; showLink(id); showAuto(id);
+  } catch (err) {
+    $('vp' + id).value = oldVp; lastRg[id] = oldRg;
+    try { await deleteDoc(doc(db, 'vpkeys', tk)); } catch (e) {} // bersihkan token baru yang mungkin sempat tertulis
+    throw err;
+  }
+  // Data baru sudah tersimpan: gagal menghapus token lama tidak boleh membatalkan hasil
+  tokens[id] = tk;
+  if (old && old !== tk) { try { await deleteDoc(doc(db, 'vpkeys', old)); } catch (e) { console.error('Token lama gagal dihapus:', e); } }
+  showLink(id); showAuto(id);
 }
 async function autoCheck() {
   if (arBusy || !auth.currentUser || !ids.length) return;
@@ -445,7 +565,12 @@ async function autoCheck() {
       showAuto(id);
       const iv = Number($('ar' + id).value) || 0;
       if (!iv || !savedIds.has(id) || !getVpTok()) continue;
-      if (Date.now() - (lastRg[id] || 0) < iv) continue;
+      if (!lastRg[id]) { // belum ada patokan jadwal: mulai hitung dari sekarang, jangan acak langsung
+        lastRg[id] = Date.now();
+        try { await setDoc(doc(db, 'apps', id), { lastRegen: lastRg[id] }, { merge: true }); } catch (e) {}
+        showAuto(id); continue;
+      }
+      if (Date.now() - lastRg[id] < iv) continue;
       if (Date.now() - (failAt[id] || 0) < 300000) continue; // gagal: coba lagi 5 menit kemudian
       try { // cegah dobel kalau panel dibuka di 2 tab/perangkat
         const s = await getDoc(doc(db, 'apps', id)), l = s.exists() ? Number(s.data().lastRegen) || 0 : 0;
@@ -464,10 +589,11 @@ function addCard(id, d = {}) {
   <div class="card" id="card${id}">
     <div class="row">
       <div class="pv" id="pv${id}"></div>
-      <div class="inf"><span class="nm" id="nm${id}"></span><span class="st" id="st${id}">Aktif</span><span class="cnt" id="ct${id}">Keys: 0</span><span class="rgt" id="rg${id}"></span></div>
+      <div class="inf"><span class="nm" id="nm${id}"></span><span class="st" id="st${id}">Aktif</span><span class="aid" id="aid${id}" hidden></span><span class="rgt" id="rg${id}"></span></div>
       <div class="mv"><button type="button" class="mvb" data-mv="${id}" data-dir="-1" aria-label="Naik">▲</button><button type="button" class="mvb" data-mv="${id}" data-dir="1" aria-label="Turun">▼</button></div>
-      <button type="button" class="edit" data-edit="${id}">Edit</button>
     </div>
+    <div class="sts"><div class="sb k"><small>Keys</small><b id="ct${id}">0</b></div><div class="sb d"><small>Devices</small><b id="dv${id}">0</b></div></div>
+    <div class="eb"><button type="button" class="edit" data-edit="${id}">Edit</button><button type="button" class="edit keyb" data-key="${id}">Key</button></div>
 
     <div class="form" id="form${id}" hidden>
       <div class="grp">
@@ -484,7 +610,40 @@ function addCard(id, d = {}) {
       </div>
 
       <div class="grp">
-        <div class="gh"><b>Akses</b><small>Key atau akun yang diberikan ke pengguna.</small></div>
+        <div class="gh"><b>Link</b></div>
+        <label for="mf${id}">MediaFire</label>
+        <input id="mf${id}" type="url" placeholder="https://www.mediafire.com/file/..." autocomplete="off" spellcheck="false">
+        <label for="vp${id}">VPLink</label>
+        <input id="vp${id}" type="url" placeholder="https://vplink.in/xxxx" autocomplete="off" spellcheck="false">
+        <p class="link">Tujuan link VPLink:<br><span id="lk${id}"></span></p>
+        <div class="tools">
+          <button type="button" class="cpy" data-copylink="${id}">Salin link</button>
+          <button type="button" class="cpy" data-regen="${id}">Acak ulang link</button>
+          <button type="button" class="cpy wide" data-mkshort="${id}">Buat link VPLink otomatis</button>
+        </div>
+      </div>
+
+      <div class="grp">
+        <div class="gh"><b>Acak ulang otomatis</b></div>
+        <select id="ar${id}" style="margin-bottom:0"><option value="0">Mati</option><option value="3600000">Tiap 1 jam</option><option value="36000000">Tiap 10 jam</option><option value="86400000">Tiap 24 jam</option><option value="259200000">Tiap 3 hari</option></select>
+        <p class="link" id="ai${id}" style="margin:10px 0 0"></p>
+      </div>
+
+      <div class="grp">
+        <div class="gh"><b>Status &amp; data</b></div>
+        <div class="acts">
+          <button type="button" class="tog" id="tg${id}" data-tog="${id}">Nonaktifkan</button>
+          <button type="button" class="rst" data-reset="${id}">Reset hitungan</button>
+          <button type="button" class="del" data-del="${id}">Hapus</button>
+        </div>
+      </div>
+
+      <div class="savebar"><button type="button" class="save" data-save="${id}">Simpan aplikasi ini</button></div>
+    </div>
+
+    <div class="form" id="keyform${id}" hidden>
+      <div class="grp">
+        <div class="gh"><b>Akses</b></div>
         <div class="row2">
           <div>
             <label for="m${id}">Tipe</label>
@@ -508,35 +667,22 @@ function addCard(id, d = {}) {
       </div>
 
       <div class="grp">
-        <div class="gh"><b>Link</b><small>Tujuan unduhan dan link key.</small></div>
-        <label for="mf${id}">MediaFire</label>
-        <input id="mf${id}" type="url" placeholder="https://www.mediafire.com/file/..." autocomplete="off" spellcheck="false">
-        <label for="vp${id}">VPLink</label>
-        <input id="vp${id}" type="url" placeholder="https://vplink.in/xxxx" autocomplete="off" spellcheck="false">
-        <p class="link">Tujuan link VPLink:<br><span id="lk${id}"></span></p>
+        <div class="gh"><b>Key License (Free Key)</b></div>
+        <label for="ia${id}">App ID <span style="color:#d11a1a">*</span></label>
+        <input id="ia${id}" placeholder="mis. app1" autocomplete="off" spellcheck="false">
+        <div class="row2">
+          <div><label for="ih${id}">Masa berlaku (jam)</label><input id="ih${id}" type="number" min="0" value="10" inputmode="numeric"></div>
+          <div><label for="im${id}">Maks device</label><input id="im${id}" type="number" min="0" value="1" inputmode="numeric"></div>
+        </div>
+        <p class="link" id="li${id}" style="margin:0 0 12px"></p>
         <div class="tools">
-          <button type="button" class="cpy" data-copylink="${id}">Salin link</button>
-          <button type="button" class="cpy" data-regen="${id}">Acak ulang link</button>
-          <button type="button" class="cpy wide" data-mkshort="${id}">Buat link VPLink otomatis</button>
+          <button type="button" class="cpy wide" data-lgen="${id}">Buat key</button>
+          <button type="button" class="cpy" data-lrk="${id}">Reset key</button>
+          <button type="button" class="cpy" data-lrd="${id}">Reset device</button>
         </div>
       </div>
 
-      <div class="grp">
-        <div class="gh"><b>Acak ulang otomatis</b><small>Link key diganti sendiri sesuai jadwal.</small></div>
-        <select id="ar${id}" style="margin-bottom:0"><option value="0">Mati</option><option value="3600000">Tiap 1 jam</option><option value="36000000">Tiap 10 jam</option><option value="86400000">Tiap 24 jam</option><option value="259200000">Tiap 3 hari</option></select>
-        <p class="link" id="ai${id}" style="margin:10px 0 0"></p>
-      </div>
-
-      <div class="grp">
-        <div class="gh"><b>Status &amp; data</b><small>Tampil di Index, hitungan key, atau hapus aplikasi.</small></div>
-        <div class="acts">
-          <button type="button" class="tog" id="tg${id}" data-tog="${id}">Nonaktifkan</button>
-          <button type="button" class="rst" data-reset="${id}">Reset hitungan</button>
-          <button type="button" class="del" data-del="${id}">Hapus</button>
-        </div>
-      </div>
-
-      <div class="savebar"><button type="button" class="save" data-save="${id}">Simpan aplikasi ini</button></div>
+      <div class="savebar"><button type="button" class="save" data-save="${id}">Simpan key</button></div>
     </div>
   </div>`);
   $('a' + id).value = d.name || '';
@@ -548,14 +694,20 @@ function addCard(id, d = {}) {
   $('lg' + id).value = d.logo || '';
   $('mf' + id).value = d.install || '';
   $('vp' + id).value = d.link || '';
+  $('ia' + id).value = d.licApp || '';
+  $('ih' + id).value = d.licHours != null ? String(d.licHours) : '10';
+  $('im' + id).value = d.licMax != null ? String(d.licMax) : '1';
+  showAid(id);
+  $('card' + id).dataset.lhash = d.licHash || '';
   $('ar' + id).value = String(d.autoRegen || 0);
   if ($('ar' + id).value === '') $('ar' + id).value = '0';
-  lastRg[id] = Number(d.lastRegen) || (d.autoRegen ? Date.now() : 0);
+  lastRg[id] = Number(d.lastRegen) || 0;
   $('nm' + id).textContent = d.name || ('Aplikasi ' + id);
   setActive(id, d.active !== false);
   $('m' + id).onchange = () => sync(id);
   $('ar' + id).onchange = () => { lastRg[id] = Date.now(); delete failAt[id]; showAuto(id); say('Jadwal diubah. Klik "Simpan aplikasi ini" supaya tersimpan.'); };
   $('a' + id).addEventListener('input', () => { $('nm' + id).textContent = $('a' + id).value.trim() || ('Aplikasi ' + id); });
+  $('ia' + id).addEventListener('input', () => showAid(id));
   $('lg' + id).addEventListener('input', () => { clearTimeout(pvT[id]); pvT[id] = setTimeout(() => setPv(id), 400); });
   setPv(id);
   sync(id);
@@ -568,7 +720,7 @@ const cap = (n) => Math.max(0, Math.min(9999, Number(n) || 0));
 let counts = {};
 function showCounts() {
   let sum = 0;
-  for (const id of ids) { const n = cap(counts[id]); sum += n; const el = $('ct' + id); if (el) el.textContent = 'Keys: ' + n; }
+  for (const id of ids) { const n = cap(counts[id]); sum += n; const el = $('ct' + id); if (el) el.textContent = n; }
   $('totalTxt').textContent = sum; $('appTxt').textContent = ids.length + ' aplikasi';
 }
 async function loadCounts() {
@@ -591,7 +743,7 @@ async function load() {
     rows.push(r);
     if (x.id === appId) legacy.push(r); // link lama ?k=1,2,3 (bisa ditebak)
   });
-  if (legacy.length && confirm('Ada ' + legacy.length + ' link lama (?k=1, ?k=2, ...) yang bisa ditebak orang.\n\nUbah jadi acak sekarang? Link lama langsung berhenti bekerja, jadi tujuan link di vplink.in harus diganti ke link baru.')) {
+  if (legacy.length && await confirmDlg('Ada ' + legacy.length + ' link lama (?k=1, ?k=2, ...) yang bisa ditebak orang.\n\nUbah jadi acak sekarang? Link lama langsung berhenti bekerja, jadi tujuan link di vplink.in harus diganti ke link baru.', { title: 'Ubah link lama' })) {
     for (const r of legacy) {
       const tk = newToken(), { _doc, id, ...data } = r;
       await setDoc(doc(db, 'vpkeys', tk), { ...data, app: id, updated: serverTimestamp() });
@@ -611,6 +763,7 @@ async function load() {
   });
   else DEFAULT_APPS.forEach((d, i) => addCard(String(i + 1), d));
   await loadCounts();
+  showDevices();
 }
 
 $('addBtn').onclick = () => {
@@ -633,6 +786,10 @@ async function saveOne(id, tk = tokens[id]) {
     username: $('n' + id).value.trim(),
     password: $('p' + id).value.trim(),
     until: $('u' + id).value.trim(),
+    licApp: $('ia' + id).value.trim(),
+    licHash: $('card' + id).dataset.lhash || '',
+    licHours: licNum('ih' + id, 10),
+    licMax: licNum('im' + id, 1),
     updated: serverTimestamp()
   });
   // data publik untuk halaman index (tanpa key/password)
@@ -644,13 +801,16 @@ async function saveOne(id, tk = tokens[id]) {
     order: ids.indexOf(id) + 1,
     active: isOn(id),
     autoRegen: Number($('ar' + id).value) || 0,
-    lastRegen: lastRg[id] || 0,
+    lastRegen: lastRg[id] || (Number($('ar' + id).value) ? (lastRg[id] = Date.now()) : 0),
     updated: serverTimestamp()
   });
   $('nm' + id).textContent = name;
   savedIds.add(id);
   ordDb[id] = ids.indexOf(id) + 1;
-  if (isNew) { try { await saveOrder(true); } catch (e) { console.error(e); } }
+  if (isNew) {
+    try { await setDoc(doc(db, 'stats', id), { count: 0, last: serverTimestamp() }); counts[id] = 0; showCounts(); } catch (e) { console.error(e); }
+    try { await saveOrder(true); } catch (e) { console.error(e); }
+  }
 }
 
 async function saveOrder(quiet) {
@@ -699,6 +859,85 @@ async function saveOrder(quiet) {
   L.addEventListener('contextmenu', (e) => { if (e.target.closest('.row')) e.preventDefault(); });
 })();
 
+// Jumlah device terdaftar pada key aplikasi (0-100). deviceRegs boleh dibaca publik.
+async function showDevices() {
+  await Promise.all(ids.map(async (id) => {
+    const el = $('dv' + id); if (!el) return;
+    const c = $('card' + id), h = c && c.dataset.lhash;
+    if (!h) { el.textContent = '0'; return; }
+    try {
+      const sn = await get(ref(ldb, LIC_DEV + '/' + h));
+      el.textContent = Math.max(0, Math.min(100, sn.exists() ? sn.numChildren() : 0));
+    } catch (e) { el.textContent = '-'; }
+  }));
+}
+
+function confirmDlg(message, opts) {
+  opts = opts || {};
+  return new Promise((resolve) => {
+    const box = $('cfm'), yes = $('cfy'), no = $('cfn');
+    $('cft').textContent = opts.title || 'Konfirmasi';
+    $('cfx').textContent = message;
+    yes.classList.toggle('danger', !!opts.danger);
+    const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); done(false); } };
+    const done = (v) => {
+      box.hidden = true;
+      yes.onclick = no.onclick = box.onclick = null;
+      removeEventListener('keydown', onKey, true);
+      resolve(v);
+    };
+    yes.onclick = () => done(true);
+    no.onclick = () => done(false);
+    box.onclick = (e) => { if (e.target === box) done(false); };
+    addEventListener('keydown', onKey, true);
+    box.hidden = false;
+    (opts.danger ? no : yes).focus();
+  });
+}
+
+async function licInfo(id) {
+  const el = $('li' + id); if (!el) return;
+  const h = $('card' + id).dataset.lhash;
+  if (!h) { el.textContent = 'Belum ada key. Isi App ID lalu klik Buat key.'; return; }
+  if (!licReady()) { el.textContent = LIC_NOAUTH; return; }
+  el.textContent = 'Memuat status...';
+  try {
+    const [a, d] = await Promise.all([get(ref(ldb, LIC_PRIV + '/' + h)), get(ref(ldb, LIC_DEV + '/' + h))]);
+    const r = a.val();
+    if (!r) { el.textContent = 'Key tidak ditemukan di License (mungkin sudah dihapus). Klik Reset key untuk membuat ulang.'; return; }
+    const used = d.exists() ? d.numChildren() : 0, max = parseInt(r.max, 10) || 0;
+    const left = !r.exp ? 'selamanya' : (r.exp > Date.now() ? 'sisa ' + humanLeft(r.exp - Date.now()) : 'kedaluwarsa');
+    el.textContent = r.code + ' | device ' + used + ' / ' + (max || '∞') + ' | ' + left;
+  } catch (err) { el.textContent = 'Gagal membaca status: ' + licErr(err); }
+}
+
+async function licIssue(id, btn) {
+  const appId = $('ia' + id).value.trim();
+  if (!appId) { say('App ID wajib diisi.', true); $('ia' + id).focus(); return; }
+  const hours = licNum('ih' + id, 10), max = licNum('im' + id, 1);
+  const exp = hours > 0 ? Date.now() + hours * 3600000 : 0;
+  const card = $('card' + id), oldHash = card.dataset.lhash || '';
+  const note = $('a' + id).value.trim() || ('Aplikasi ' + id);
+  let code = '', h = '';
+  if (btn) btn.disabled = true;
+  try {
+    await licMutate(async (recs) => {
+      do { code = makeCode(); h = await sha256Hex(normCode(code)); } while (recs[h]);
+      if (oldHash) delete recs[oldHash];
+      recs[h] = { code, app: appId, exp, off: false, max, note, tier: 'free', src: 'freekey', createdAt: new Date().toISOString() };
+    });
+  } catch (err) { say('Gagal membuat key: ' + licErr(err), true); console.error(err); if (btn) btn.disabled = false; return; }
+  if (oldHash) { try { await remove(ref(ldb, LIC_DEV + '/' + oldHash)); } catch (e) { console.error(e); } }
+  card.dataset.lhash = h;
+  $('m' + id).value = 'key'; sync(id);
+  $('k' + id).value = code;
+  $('u' + id).value = exp ? fmt(exp) : '';
+  try { await saveOne(id); say('Key dibuat: ' + code + '. Tampil di tab Free Key dan di halaman key.'); }
+  catch (err) { say('Key masuk ke License, tapi gagal disimpan ke halaman key (cek login / rules Firebase).', true); console.error(err); }
+  if (btn) btn.disabled = false;
+  licInfo(id); showDevices();
+}
+
 async function onAction(e) {
   const mv = e.target.closest('[data-mv]');
   if (mv) {
@@ -711,6 +950,34 @@ async function onAction(e) {
   }
   const ed = e.target.closest('[data-edit]');
   if (ed) { openEdit(ed.dataset.edit); return; }
+  const kb = e.target.closest('[data-key]');
+  if (kb) { openEdit(kb.dataset.key, 'keyform'); return; }
+
+  const lg = e.target.closest('[data-lgen]');
+  if (lg) {
+    const id = lg.dataset.lgen;
+    if ($('card' + id).dataset.lhash) { say('Key sudah ada. Pakai Reset key untuk menggantinya.', true); return; }
+    await licIssue(id, lg);
+    return;
+  }
+  const lk = e.target.closest('[data-lrk]');
+  if (lk) {
+    const id = lk.dataset.lrk;
+    if (!$('card' + id).dataset.lhash) { say('Belum ada key. Klik Buat key dulu.', true); return; }
+    if (!(await confirmDlg('Key lama langsung mati, key baru dibuat, masa berlaku dihitung ulang, dan semua device direset.', { title: 'Reset key', danger: true }))) return;
+    await licIssue(id, lk);
+    return;
+  }
+  const ld = e.target.closest('[data-lrd]');
+  if (ld) {
+    const id = ld.dataset.lrd, h = $('card' + id).dataset.lhash;
+    if (!h) { say('Belum ada key.', true); return; }
+    if (!licReady()) { say(LIC_NOAUTH, true); return; }
+    if (!(await confirmDlg('Semua device untuk key ini dihapus dan harus daftar ulang.', { title: 'Reset device', danger: true }))) return;
+    try { await remove(ref(ldb, LIC_DEV + '/' + h)); say('Daftar device direset.'); licInfo(id); showDevices(); }
+    catch (err) { say('Gagal reset device: ' + licErr(err), true); console.error(err); }
+    return;
+  }
 
   const sv = e.target.closest('[data-save]');
   if (sv) {
@@ -739,7 +1006,7 @@ async function onAction(e) {
   const rg = e.target.closest('[data-regen]');
   if (rg) {
     const id = rg.dataset.regen, auto = !!getVpTok();
-    if (!confirm('Acak ulang link aplikasi ini? Link lama langsung berhenti bekerja.' + (auto ? ' Link VPLink baru dibuat otomatis.' : ' Tujuan di vplink.in harus diganti manual.'))) return;
+    if (!(await confirmDlg('Link lama langsung berhenti bekerja.' + (auto ? ' Link VPLink baru dibuat otomatis.' : ' Tujuan di vplink.in harus diganti manual.'), { title: 'Acak ulang link' }))) return;
     try { await regenLink(id); }
     catch (err) { say('Gagal mengacak link, tidak ada yang diubah: ' + (err.message || err) + (auto ? ' (kalau terblokir CORS, pakai Cloud Function)' : ''), true); console.error(err); return; }
     say(auto ? 'Link baru dibuat dan sudah tersimpan: ' + $('vp' + id).value : 'Link baru dibuat. Salin lalu ganti tujuan di vplink.in.');
@@ -760,7 +1027,7 @@ async function onAction(e) {
   const rs = e.target.closest('[data-reset]');
   if (rs) {
     const id = rs.dataset.reset, nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
-    if (!confirm('Reset hitungan Keys "' + nm + '" ke 0?')) return;
+    if (!(await confirmDlg('Hitungan Keys "' + nm + '" akan kembali ke 0.', { title: 'Reset hitungan', danger: true }))) return;
     try { await setDoc(doc(db, 'stats', id), { count: 0, last: serverTimestamp() }); }
     catch (err) { say('Gagal reset (cek login / rules Firebase).', true); console.error(err); return; }
     counts[id] = 0; showCounts();
@@ -781,22 +1048,44 @@ async function onAction(e) {
   const b = e.target.closest('[data-del]');
   if (!b) return;
   const id = b.dataset.del, nm = $('a' + id).value.trim() || ('Aplikasi ' + id);
-  if (!confirm('Hapus "' + nm + '"? Link key.html?k=' + tokens[id] + ' akan berhenti bekerja.')) return;
-  try { await deleteDoc(doc(db, 'vpkeys', tokens[id])); await deleteDoc(doc(db, 'apps', id)); try { await deleteDoc(doc(db, 'stats', id)); } catch (e2) {} }
+  if (!(await confirmDlg('Hapus "' + nm + '"? Link key.html?k=' + tokens[id] + ' akan berhenti bekerja.', { title: 'Hapus aplikasi', danger: true }))) return;
+  try { await deleteDoc(doc(db, 'vpkeys', tokens[id])); await deleteDoc(doc(db, 'apps', id)); try { await deleteDoc(doc(db, 'stats', id)); } catch (e2) { console.error('Hitungan gagal dihapus:', e2); } }
   catch (err) { say('Gagal menghapus (cek login / rules Firebase).', true); return; }
+  const lh = $('card' + id).dataset.lhash;
+  if (lh && licReady()) {
+    try { await licMutate((r) => { delete r[lh]; }); await remove(ref(ldb, LIC_DEV + '/' + lh)); }
+    catch (e3) { console.error(e3); }
+  }
   closeEdit();
   $('card' + id).remove();
   ids = ids.filter((x) => x !== id);
   delete counts[id]; delete tokens[id]; delete lastRg[id]; delete failAt[id]; savedIds.delete(id); delete ordDb[id]; showCounts();
   say('"' + nm + '" dihapus.');
 }
+function licStatus() {
+  const u = licAuth.currentUser;
+  $('licSt').textContent = u ? 'Tersambung sebagai ' + u.email + '.' : 'Belum tersambung.' + (licLastErr ? ' ' + licLastErr : ' Masukkan email & password akun admin di project License.');
+}
+$('licGo').onclick = async () => {
+  const em = $('licEm').value.trim(), pw = $('licPw').value;
+  if (!em || !pw) { say('Isi email dan password License.', true); return; }
+  const b = $('licGo'); b.disabled = true;
+  try {
+    await signInWithEmailAndPassword(licAuth, em, pw);
+    licLastErr = ''; $('licPw').value = '';
+    say('Tersambung ke License.');
+    if (cur) licInfo(cur);
+  } catch (e) { licLastErr = licAuthErr(e); say('Gagal tersambung ke License: ' + licLastErr, true); console.error(e); }
+  b.disabled = false; licStatus();
+};
+onAuthStateChanged(licAuth, licStatus);
 $('vpTok').value = getVpTok();
 $('vpTokSave').onclick = () => {
   const v = $('vpTok').value.trim();
   try { if (v) localStorage.setItem(VPK, v); else localStorage.removeItem(VPK); ids.forEach(showAuto); say(v ? 'Token VPLink disimpan di browser ini.' : 'Token VPLink dihapus.'); }
   catch (e) { say('Browser menolak menyimpan token.', true); }
 };
-$('refBtn').onclick = loadCounts;
+$('refBtn').onclick = () => { loadCounts(); showDevices(); };
 $('list').onclick = onAction;
 $('mbody').onclick = onAction;
 $('mclose').onclick = closeEdit;
@@ -814,7 +1103,13 @@ $('loginForm').onsubmit = async (ev) => {
   const b = $('loginBtn');
   if (!$('em').value.trim() || !$('pw').value) { say('Isi email dan password dulu.', true); return; }
   b.disabled = true; b.textContent = 'Memeriksa...';
-  try { await signInWithEmailAndPassword(auth, $('em').value.trim(), $('pw').value); say(''); }
+  try {
+    await signInWithEmailAndPassword(auth, $('em').value.trim(), $('pw').value); say('');
+    $('licEm').value = $('em').value.trim();
+    try { await signInWithEmailAndPassword(licAuth, $('em').value.trim(), $('pw').value); licLastErr = ''; }
+    catch (le) { licLastErr = licAuthErr(le); say('Masuk berhasil, tapi License belum tersambung: ' + licLastErr + ' Sambungkan manual di kartu Koneksi License.', true); console.error(le); }
+    licStatus();
+  }
   catch (e) {
     const m = {
       'auth/invalid-credential': 'Email atau password salah (atau user belum dibuat di Authentication).',
@@ -830,7 +1125,7 @@ $('loginForm').onsubmit = async (ev) => {
   }
   b.disabled = false; b.textContent = 'Masuk';
 };
-$('out').onclick = () => { closeEdit(); signOut(auth); };
+$('out').onclick = () => { closeEdit(); signOut(licAuth).catch(() => {}); signOut(auth); };
 
 $('saveAll').onclick = async () => {
   try {
@@ -841,6 +1136,7 @@ $('saveAll').onclick = async () => {
 
 onAuthStateChanged(auth, async (u) => {
   $('login').hidden = !!u; $('panel').hidden = !u;
+  if (u && !$('licEm').value) $('licEm').value = u.email || '';
   clearInterval(arT);
   if (u) { try { await load(); } catch (e) { say('Gagal memuat data.', true); } arT = setInterval(autoCheck, 30000); autoCheck(); }
 });
