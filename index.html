@@ -239,6 +239,30 @@ header{margin-bottom:38px;text-align:center}
   *,*::before,*::after{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01s!important}
   #spot{display:none}
 }
+
+/* ============ MAINTENANCE (kunci total) ============ */
+.mnt{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+  padding:calc(18px + var(--safe-t)) 20px calc(18px + var(--safe-b));
+  background:rgba(11,11,11,.7);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  overscroll-behavior:contain;touch-action:none;animation:mntFade .25s ease-out both}
+.mnt[hidden]{display:none}
+.mnt-wrap{position:relative;width:100%;max-width:320px;max-height:100%;display:flex;flex-direction:column;padding-top:30px;animation:mntPop .5s var(--ease) both}
+.mnt-ico{position:absolute;top:0;left:50%;z-index:2;width:60px;height:60px;margin-left:-30px;display:grid;place-items:center;
+  border:var(--bd);border-radius:50%;background:var(--blue);box-shadow:3px 3px 0 var(--ink)}
+.mnt-ico svg{width:30px;height:30px;fill:none;stroke:var(--white);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;animation:mntSpin 8s linear infinite}
+.mnt-box{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;border:var(--bd);border-radius:var(--r-lg);background:var(--white);box-shadow:6px 6px 0 var(--ink)}
+.mnt-bar{flex:none;height:12px;border-bottom:var(--bd);
+  background:repeating-linear-gradient(-45deg,var(--yellow) 0 10px,var(--ink) 10px 20px)}
+.mnt-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+  padding:40px 20px 20px;text-align:center}
+.mnt-t{margin:0 0 10px;font:400 clamp(17px,5.2vw,21px)/1.2 var(--head);text-transform:uppercase;overflow-wrap:anywhere}
+.mnt-t::after{content:"";display:block;width:44px;height:5px;margin:10px auto 0;border:2px solid var(--ink);border-radius:4px;background:var(--yellow)}
+.mnt-m{margin:0;white-space:pre-line;overflow-wrap:anywhere;font:500 14px/1.5 var(--body);color:#2a2a2a}
+@keyframes mntFade{from{opacity:0}}
+@keyframes mntPop{from{opacity:0;transform:translateY(18px) scale(.93)}}
+@keyframes mntSpin{to{transform:rotate(360deg)}}
+@media (max-height:480px){.mnt-ico{width:50px;height:50px;margin-left:-25px}.mnt-ico svg{width:24px;height:24px}.mnt-wrap{padding-top:25px}.mnt-body{padding:34px 18px 16px}}
+@media (prefers-reduced-motion:reduce){.mnt,.mnt-wrap,.mnt-ico svg{animation:none}}
 </style>
 </head>
 <body>
@@ -305,9 +329,24 @@ header{margin-bottom:38px;text-align:center}
   <div class="ticker rev"><div class="track" id="track2"></div></div>
 </div>
 
+<div class="mnt" id="mnt" role="alertdialog" aria-modal="true" aria-labelledby="mntT" aria-describedby="mntM" hidden>
+  <div class="mnt-wrap">
+    <div class="mnt-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/><circle cx="12" cy="12" r="6.6"/></svg>
+    </div>
+    <div class="mnt-box">
+      <div class="mnt-bar" aria-hidden="true"></div>
+      <div class="mnt-body">
+        <h2 class="mnt-t" id="mntT"></h2>
+        <p class="mnt-m" id="mntM"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, getDocs, collection, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ================= CONFIG ================= */
 const firebaseConfig = {
@@ -328,6 +367,9 @@ const FALLBACK = [
   { name: '8 BALL POOL V10', logo: 'https://i.ibb.co.com/674DCgnZ/product.jpg', install: 'https://www.mediafire.com/file/81gji9qdaqofycn/8+Ball+Poll+V10.apk/file', link: 'https://vplink.in/bhjcxxz' }
 ];
 
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
 /* ================= HELPERS ================= */
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, props = {}) => Object.assign(document.createElement(tag), { className: cls || '', ...props });
@@ -341,13 +383,13 @@ const safeUrl = (u) => { try { return /^https?:$/.test(new URL(u).protocol) ? u 
 /* ================= DATA ================= */
 async function loadApps() {
   try {
-    const db = getFirestore(initializeApp(firebaseConfig));
     const snap = await Promise.race([
       getDocs(collection(db, 'apps')),
       new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))
     ]);
-    if (snap.empty) return FALLBACK;
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+    const docs = snap.docs.filter((d) => d.id !== '_maintenance');
+    if (!docs.length) return FALLBACK;
+    return docs.map((d) => ({ id: d.id, ...d.data() }))
       .filter((r) => r.name && safeUrl(r.link) && r.active !== false)
       .sort((a, b) => (a.order ?? Number(a.id)) - (b.order ?? Number(b.id)));
   } catch (e) {
@@ -474,6 +516,43 @@ tutBtn.addEventListener('click', openTut);
 vclose.addEventListener('click', closeTut);
 vmodal.addEventListener('click', (e) => { if (e.target === vmodal) closeTut(); });
 addEventListener('keydown', (e) => { if (e.key === 'Escape' && !vmodal.hidden) closeTut(); });
+
+/* ================= MAINTENANCE ================= */
+// Diatur dari admin2.html (dokumen apps/_maintenance). Saat aktif: popup tidak bisa ditutup & seluruh web terkunci.
+const MNT_DEFAULT = { title: 'Sedang Maintenance', message: 'Website sedang dalam perbaikan. Silakan kembali beberapa saat lagi.' };
+const mnt = $('mnt'), mntT = $('mntT'), mntM = $('mntM');
+const lockables = ['main', '.actions', '#vmodal', '.ticker-wrap'].map((q) => document.querySelector(q)).filter(Boolean);
+const stopKeys = (e) => {
+  if (!mnt.hidden && (e.key === 'Escape' || e.key === 'Tab' || e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); }
+};
+function setMaintenance(on, title, message) {
+  if (on) {
+    mntT.textContent = (title || '').trim() || MNT_DEFAULT.title;
+    mntM.textContent = (message || '').trim() || MNT_DEFAULT.message;
+    if (mnt.hidden) {
+      mnt.hidden = false;
+      try { vplayer.pause(); } catch (e) {}
+      vmodal.hidden = true;
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      lockables.forEach((n) => { n.inert = true; n.setAttribute('aria-hidden', 'true'); });
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    }
+  } else if (!mnt.hidden) {
+    mnt.hidden = true;
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    lockables.forEach((n) => { n.inert = false; n.removeAttribute('aria-hidden'); });
+  }
+}
+addEventListener('keydown', stopKeys, true);
+mnt.addEventListener('contextmenu', (e) => e.preventDefault());
+// realtime: admin menyalakan / mematikan -> langsung berlaku tanpa refresh
+try {
+  onSnapshot(doc(db, 'apps', '_maintenance'),
+    (d) => { const m = d.exists() ? d.data() : {}; setMaintenance(m.enabled === true, m.title, m.message); },
+    (e) => console.warn('Maintenance check failed:', e));
+} catch (e) { console.warn(e); }
 
 /* ================= DEKORASI & TICKER ================= */
 // bintang bergerigi (12 titik) dibuat sekali, dipakai ulang lewat <use>

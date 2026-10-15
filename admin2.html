@@ -265,6 +265,16 @@ button.x:hover{background:var(--ink);color:#fff}
 .mh{position:static}
 .savebar{position:static;margin:6px 0 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
 #mmsg{top:8px}
+
+/* ===== maintenance ===== */
+textarea{width:100%;min-height:110px;margin:0 0 12px;padding:12px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);font:700 15px/1.4 var(--body);box-shadow:3px 3px 0 var(--ink);outline:0;resize:vertical}
+textarea:focus{background:var(--tint);box-shadow:5px 5px 0 var(--blue)}
+.mnt-sw{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:12px;border:3px solid var(--ink);border-radius:12px;background:var(--paper)}
+.mnt-sw b{font:400 14px/1.1 var(--head);text-transform:uppercase}
+button.mntTog{width:auto;height:40px;padding:0 14px;font-size:12px;background:var(--green);color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+button.mntTog.on{background:var(--red);color:#fff}
+.mntSt{display:inline-block;margin-left:6px;padding:4px 8px 3px;border:2px solid var(--ink);border-radius:6px;background:var(--muted);color:#fff;font:700 10px/1 var(--body);letter-spacing:.08em}
+.mntSt.on{background:var(--red)}
 </style></head>
 <body>
 <div class="deco d1" aria-hidden="true"></div><div class="deco d2" aria-hidden="true"></div>
@@ -304,6 +314,16 @@ button.x:hover{background:var(--ink);color:#fff}
   <div class="actbar">
     <button class="alt" id="addBtn" type="button">+ Aplikasi</button>
     <button id="saveAll" type="button">Simpan semua</button>
+  </div>
+  <div class="card tokc" id="mntCard">
+    <div class="ttl">Maintenance <span class="mntSt" id="mntSt">OFF</span></div>
+    <p class="hint">Jika aktif, halaman utama menampilkan popup yang tidak bisa ditutup dan seluruh web terkunci.</p>
+    <div class="mnt-sw"><b id="mntSwTxt">Mode maintenance: mati</b><button type="button" class="mntTog" id="mntTog">Aktifkan</button></div>
+    <label for="mntTitle">Judul popup</label>
+    <input id="mntTitle" type="text" maxlength="80" placeholder="Sedang Maintenance" autocomplete="off">
+    <label for="mntMsg">Isi popup</label>
+    <textarea id="mntMsg" maxlength="600" placeholder="Website sedang dalam perbaikan. Silakan kembali beberapa saat lagi."></textarea>
+    <button type="button" id="mntSave" class="alt">Simpan Maintenance</button>
   </div>
   <div class="card tokc" id="licCard">
     <div class="ttl">Koneksi License</div>
@@ -1134,11 +1154,38 @@ $('saveAll').onclick = async () => {
   } catch (e) { say('Gagal menyimpan (cek login / rules Firebase).', true); console.error(e); }
 };
 
+/* ===== MAINTENANCE ===== */
+let mntOn = false;
+const mntPaint = () => {
+  $('mntSt').textContent = mntOn ? 'ON' : 'OFF'; $('mntSt').classList.toggle('on', mntOn);
+  $('mntSwTxt').textContent = 'Mode maintenance: ' + (mntOn ? 'AKTIF' : 'mati');
+  $('mntTog').textContent = mntOn ? 'Matikan' : 'Aktifkan'; $('mntTog').classList.toggle('on', mntOn);
+};
+async function mntLoad() {
+  try {
+    const s = await getDoc(doc(db, 'apps', '_maintenance')), d = s.exists() ? s.data() : {};
+    mntOn = d.enabled === true; $('mntTitle').value = d.title || ''; $('mntMsg').value = d.message || '';
+  } catch (e) { console.error(e); }
+  mntPaint();
+}
+async function mntSave(msg) {
+  try {
+    await setDoc(doc(db, 'apps', '_maintenance'), { enabled: mntOn, title: $('mntTitle').value.trim(), message: $('mntMsg').value.trim(), updated: serverTimestamp() }, { merge: true });
+    say(msg);
+  } catch (e) { say('Gagal menyimpan Maintenance (cek login / rules Firebase).', true); console.error(e); return false; }
+  return true;
+}
+$('mntTog').onclick = async () => {
+  mntOn = !mntOn; mntPaint();
+  if (!(await mntSave(mntOn ? 'Maintenance AKTIF. Web langsung terkunci.' : 'Maintenance dimatikan. Web bisa dipakai lagi.'))) { mntOn = !mntOn; mntPaint(); }
+};
+$('mntSave').onclick = () => mntSave('Teks Maintenance tersimpan.');
+
 onAuthStateChanged(auth, async (u) => {
   $('login').hidden = !!u; $('panel').hidden = !u;
   if (u && !$('licEm').value) $('licEm').value = u.email || '';
   clearInterval(arT);
-  if (u) { try { await load(); } catch (e) { say('Gagal memuat data.', true); } arT = setInterval(autoCheck, 30000); autoCheck(); }
+  if (u) { mntLoad(); try { await load(); } catch (e) { say('Gagal memuat data.', true); } arT = setInterval(autoCheck, 30000); autoCheck(); }
 });
 </script>
 </body></html>
