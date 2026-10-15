@@ -317,12 +317,14 @@ button.mntTog.on{background:var(--red);color:#fff}
   </div>
   <div class="card tokc" id="mntCard">
     <div class="ttl">Maintenance <span class="mntSt" id="mntSt">OFF</span></div>
-    <p class="hint">Jika aktif, halaman utama menampilkan popup yang tidak bisa ditutup dan seluruh web terkunci.</p>
+    <p class="hint">Jika aktif, halaman utama menampilkan popup (bisa ditutup dengan X). Setelah ditutup, tombol Install &amp; Get Key tetap terkunci dan menampilkan toast.</p>
     <div class="mnt-sw"><b id="mntSwTxt">Mode maintenance: mati</b><button type="button" class="mntTog" id="mntTog">Aktifkan</button></div>
     <label for="mntTitle">Judul popup</label>
     <input id="mntTitle" type="text" maxlength="80" placeholder="Sedang Maintenance" autocomplete="off">
     <label for="mntMsg">Isi popup</label>
     <textarea id="mntMsg" maxlength="600" placeholder="Website sedang dalam perbaikan. Silakan kembali beberapa saat lagi."></textarea>
+    <label for="mntToast">Teks toast (saat Install / Get Key diklik)</label>
+    <input id="mntToast" type="text" maxlength="140" placeholder="Sedang maintenance. Install &amp; Get Key sementara belum bisa digunakan." autocomplete="off">
     <button type="button" id="mntSave" class="alt">Simpan Maintenance</button>
   </div>
   <div class="card tokc" id="licCard">
@@ -1164,22 +1166,22 @@ const mntPaint = () => {
 async function mntLoad() {
   try {
     const s = await getDoc(doc(db, 'apps', '_maintenance')), d = s.exists() ? s.data() : {};
-    mntOn = d.enabled === true; $('mntTitle').value = d.title || ''; $('mntMsg').value = d.message || '';
+    mntOn = d.enabled === true; $('mntTitle').value = d.title || ''; $('mntMsg').value = d.message || ''; $('mntToast').value = d.toast || '';
   } catch (e) { console.error(e); }
   mntPaint();
 }
 async function mntSave(msg) {
   try {
-    await setDoc(doc(db, 'apps', '_maintenance'), { enabled: mntOn, title: $('mntTitle').value.trim(), message: $('mntMsg').value.trim(), updated: serverTimestamp() }, { merge: true });
+    await setDoc(doc(db, 'apps', '_maintenance'), { enabled: mntOn, title: $('mntTitle').value.trim(), message: $('mntMsg').value.trim(), toast: $('mntToast').value.trim(), updated: serverTimestamp() }, { merge: true });
     say(msg);
   } catch (e) { say('Gagal menyimpan Maintenance (cek login / rules Firebase).', true); console.error(e); return false; }
   return true;
 }
 $('mntTog').onclick = async () => {
   mntOn = !mntOn; mntPaint();
-  if (!(await mntSave(mntOn ? 'Maintenance AKTIF. Web langsung terkunci.' : 'Maintenance dimatikan. Web bisa dipakai lagi.'))) { mntOn = !mntOn; mntPaint(); }
+  if (!(await mntSave(mntOn ? 'Maintenance AKTIF. Popup tampil, Install & Get Key terkunci.' : 'Maintenance dimatikan. Install & Get Key bisa dipakai lagi.'))) { mntOn = !mntOn; mntPaint(); }
 };
-$('mntSave').onclick = () => mntSave('Teks Maintenance tersimpan.');
+$('mntSave').onclick = () => mntSave('Pengaturan Maintenance tersimpan.');
 
 onAuthStateChanged(auth, async (u) => {
   $('login').hidden = !!u; $('panel').hidden = !u;
